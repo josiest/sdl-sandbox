@@ -6,5 +6,8 @@ set_target_properties(sketch PROPERTIES
     CXX_STANDARD 23
     CXX_STANDARD_REQUIRED TRUE)
 
+target_include_directories(sketch PRIVATE ../pi/include include)
+
 find_package(SDL2 REQUIRED)
-target_link_libraries(sketch PRIVATE SDL2)
+find_package(yaml-cpp REQUIRED)
+target_link_libraries(sketch PRIVATE SDL2 yaml-cpp)

@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <cstddef>
+#include "pi/window_params.hpp"
 
 inline namespace pi {
 template<typename Resource, typename... Args>
@@ -25,10 +26,8 @@ int main()
 { 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) { return EXIT_FAILURE; }
 
-    auto* window = SDL_CreateWindow("Regular Polygons",
-                                    SDL_WINDOWPOS_UNDEFINED,
-                                    SDL_WINDOWPOS_UNDEFINED, 
-                                    640, 480, 0);
+    pi::window_params window_params;
+    auto* window = pi::make_window(window_params);
     if (not window) { SDL_Quit(); return EXIT_FAILURE; }
 
     auto* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
