@@ -1,4 +1,5 @@
 #pragma once
+#include "pi/lookup_table.hpp"
 #include "pi/containers.hpp"
 
 #include <cstdint>
@@ -41,7 +42,7 @@ inline SDL_Window* make_window(const window_params& params)
 }
 
 static constexpr lookup_table<std::uint32_t, std::string_view, 20>
-window_flag_names{{
+window_flag_names{
     { SDL_WINDOW_FULLSCREEN,            "fullscreen" },
     { SDL_WINDOW_FULLSCREEN_DESKTOP,    "fullscreen-desktop" },
     { SDL_WINDOW_OPENGL,                "opengl" },
@@ -62,7 +63,7 @@ window_flag_names{{
     { SDL_WINDOW_UTILITY,               "utility" },
     { SDL_WINDOW_TOOLTIP,               "tooltip" },
     { SDL_WINDOW_POPUP_MENU,            "popup-menu" }
-}};
+};
 
 template<typename Container>
 requires can_push_back<Container, std::string>
