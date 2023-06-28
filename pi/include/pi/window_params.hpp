@@ -91,12 +91,8 @@ inline constexpr std::uint32_t read_window_flag(const YAML::Node& node)
 inline constexpr std::uint32_t read_window_flags(const YAML::Node& sequence)
 {
     if (not sequence.IsSequence()) { return 0u; }
-    // return std::transform_reduce(sequence.begin(), sequence.end(),
-    //                              read_window_flag, std::bit_or{});
-
-    std::uint32_t flags = 0u;
-    for (const auto elem : sequence) { flags |= read_window_flag(elem); }
-    return flags;
+    return std::transform_reduce(sequence.begin(), sequence.end(),
+                                 0u, std::bit_or{}, read_window_flag);
 }
 }
 
