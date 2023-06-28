@@ -1,18 +1,20 @@
 #pragma once
-// #include "pi/containers.hpp"
+#include "pi/containers.hpp"
 
-#include <array>
-#include <utility>
+#include <cstdint>
+#include <string>
+// #include <string_view>
 
 #include <optional>
-#include <string>
-#include <cstdint>
-// #include <string_view>
+#include <utility>
+#include <array>
 
 #include <algorithm>
 
+#include <cstdio>
+
 #include <SDL2/SDL.h>
-// #include <yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h>
 
 inline namespace pi {
 
@@ -88,57 +90,96 @@ inline SDL_Window* make_window(const window_params& params)
 // }
 }
 
-// template<>
-// struct YAML::convert<pi::window_params> {
-// 
-//     static YAML::Node encode(const pi::window_params& params)
-//     {
-//         YAML::Node node;
-//         if (params.name) { node["name"] = *params.name; }
-//         if (params.x and params.y) {
-//             node["position"].push_back(*params.x);
-//             node["position"].push_back(*params.y);
-//         }
-//         if (params.width and params.height) {
-//             node["resolution"].push_back(*params.width);
-//             node["resolution"].push_back(*params.height);
-//         }
-//         // if (params.flags) {
-//         //     pi::write_window_flags(*params.flags, node["flags"]);
-//         // }
-//     }
-// 
-//     static bool decode(const YAML::Node& node, pi::window_params& params)
-//     {
-//         if (not node.IsMap()) { return true; }
-//         if (const auto name = node["name"]; name.IsScalar()) {
-//             params.name = name.as<std::string>();
-//         }
-//         if (const auto position = node["position"];) {
-//             if (position.IsSequence() and position.size() == 2) {
-//                 try {
-//                     params.x = position[0].as<int>();
-//                     params.y = position[1].as<int>();
-//                 }
-//                 catch (...) {
-//                 }
-//             }
-//         }
-//         if (const auto resolution = node["resolution"]) {
-//             if (resolution.IsSequence() and position.size() == 2) {
-//                 try {
-//                     params.width = position[0].as<std::uint32_t>();
-//                     params.height = position[1].as<std:::uint32_t>();
-//                 }
-//                 catch (...) {
-//                 }
-//             }
-//         }
-//         // if (const auto flags = node["flags"]) {
-//         //     if (flags.IsSequence() and flags.size() <= 32) {
-//         //         params.flags = pi::read_window_flags(flags)
-//         //     }
-//         // }
-//     }
-//     return true;
-// };
+template<>
+struct YAML::convert<pi::window_params> {
+
+    static YAML::Node encode(const pi::window_params& params)
+    {
+        YAML::Node node;
+        if (params.name) { node["name"] = *params.name; }
+        if (params.x and params.y) {
+            node["position"].push_back(*params.x);
+            node["position"].push_back(*params.y);
+        }
+        if (params.width and params.height) {
+            node["resolution"].push_back(*params.width);
+            node["resolution"].push_back(*params.height);
+        }
+        // if (params.flags) {
+        //     pi::write_window_flags(*params.flags, node["flags"]);
+        // }
+        return node;
+    }
+
+    static bool decode(const YAML::Node& node, pi::window_params& params)
+    {
+        if (not node.IsMap()) {
+            const YAML::Exception error{ node.Mark(), "Map Error" };
+            std::printf("%s\n",
+                        "Tried decoding yaml as SDL window params, but the "
+                        "yaml source is not a map\n", error.what());
+            return true;
+        }
+        if (const auto name = node["name"]) {
+            if (name.IsScalar()) {
+                params.name = name.as<std::string>();
+            }
+            else {
+                const YAML::Exception error{ name.Mark(), "Scalar Error" };
+                std::printf("%s\n",
+                            "Tried decoding window name from yaml, but value "
+                            "is not scalar\n", error.what());
+            }
+        }
+        if (const auto position = node["position"]) {
+            if (position.IsSequence() and position.size() == 2) {
+                try {
+                    params.x = position[0].as<int>();
+                    params.y = position[1].as<int>();
+                }
+                catch (YAML::Exception error) {
+                    std::printf("%s\n"
+                                "Tried decoding yaml as an integer position "
+                                "but the sequence values weren't integers\n",
+                                error.what());
+                }
+            }
+            else {
+                YAML::Exception error{ position.Mark(), "Sequence Error" };
+                std::printf("%s\n"
+                            "Tried decoding yaml as integer position but the "
+                            "yaml source was either not a sequence or didn't "
+                            "have exactly two values\n",
+                            error.what());
+            }
+        }
+        if (const auto resolution = node["resolution"]) {
+            if (resolution.IsSequence() and resolution.size() == 2) {
+                try {
+                    params.width = resolution[0].as<int>();
+                    params.height = resolution[1].as<int>();
+                }
+                catch (YAML::Exception error) {
+                    std::printf("%s\n"
+                                "Tried decoding yaml as an integer pair "
+                                "but the sequence values weren't integers\n",
+                                error.what());
+                }
+            }
+            else {
+                YAML::Exception error{ resolution.Mark(), "Sequence Error" };
+                std::printf("%s\n"
+                            "Tried decoding yaml as an integer pair but the "
+                            "yaml source was either not a sequence or didn't "
+                            "have exactly two values\n",
+                            error.what());
+            }
+        }
+        // if (const auto flags = node["flags"]) {
+        //     if (flags.IsSequence() and flags.size() <= 32) {
+        //         params.flags = pi::read_window_flags(flags)
+        //     }
+        // }
+        return true;
+    }
+};

@@ -1,6 +1,12 @@
-#include <SDL2/SDL.h>
-#include <cstddef>
 #include "pi/window_params.hpp"
+
+#include <cstddef>
+#include <cstdio>
+#include <filesystem>
+
+#include <SDL2/SDL.h>
+
+namespace fs = std::filesystem;
 
 inline namespace pi {
 template<typename Resource, typename... Args>
@@ -26,7 +32,32 @@ int main()
 { 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) { return EXIT_FAILURE; }
 
+    const auto root_path = fs::canonical(fs::path(SDL_GetBasePath())/"..");
+    const auto resources_path = root_path/"resources";
+    const auto config_path = resources_path/"config.yml";
+
     pi::window_params window_params;
+    if (fs::exists(config_path)) {
+        const YAML::Node config = YAML::LoadFile(config_path.c_str());
+        if (config.IsMap()) {
+            if (const auto window_config = config["window"]) {
+                YAML::convert<pi::window_params>
+                    ::decode(window_config, window_params);
+            }
+            else {
+                std::printf("Tried reading window settings from config, but "
+                            "the project config has no window settings\n");
+            }
+        }
+        else {
+            std::printf("Tried reading window settings from config, but "
+                        "the project config is not a yaml map\n");
+        }
+    }
+    else {
+        std::printf("Tried reading project config at %s, but the path doesn't "
+                    "exist\n", config_path.c_str());
+    }
     auto* window = pi::make_window(window_params);
     if (not window) { SDL_Quit(); return EXIT_FAILURE; }
 
