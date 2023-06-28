@@ -1,3 +1,4 @@
+#include "pi/paths.hpp"
 #include "pi/window_params.hpp"
 
 #include <cstddef>
@@ -32,10 +33,7 @@ int main()
 { 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) { return EXIT_FAILURE; }
 
-    const auto root_path = fs::canonical(fs::path(SDL_GetBasePath())/"..");
-    const auto resources_path = root_path/"resources";
-    const auto config_path = resources_path/"config.yml";
-
+    const auto config_path = pi::resource_path("config.yml");
     pi::window_params window_params;
     if (fs::exists(config_path)) {
         const YAML::Node config = YAML::LoadFile(config_path.c_str());
