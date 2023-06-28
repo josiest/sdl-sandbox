@@ -9,8 +9,7 @@
 
 inline namespace pi {
 
-template<std::equality_comparable Key,
-         std::equality_comparable Value, std::size_t N>
+template<typename Key, typename Value, std::size_t N>
 struct lookup_table {
     // Container Types
     using value_type = std::pair<Key, Value>;
@@ -58,6 +57,50 @@ struct lookup_table {
 
     void swap(lookup_table<Key, Value, N>& other) {
         mappings.swap(other.mappings);
+    }
+
+    template<std::equality_comparable_with<Key> AltKey>
+    constexpr auto find(const AltKey& key)
+    {
+        return std::ranges::find(mappings, key, &value_type::first);
+    }
+    template<std::equality_comparable_with<Value> AltValue>
+    requires (not std::equality_comparable_with<AltValue, Key>)
+    constexpr auto find(const AltValue& value)
+    {
+        return std::ranges::find(mappings, value, &value_type::second);
+    }
+    template<std::equality_comparable_with<Key> AltKey>
+    constexpr auto find_by_key(const Key& key)
+    {
+        return std::ranges::find(mappings, key, &value_type::first);
+    }
+    template<std::equality_comparable_with<Value> AltValue>
+    constexpr auto find_by_value(const AltValue& value)
+    {
+        return std::ranges::find(mappings, value, &value_type::second);
+    }
+
+    template<std::equality_comparable_with<Key> AltKey>
+    constexpr auto find(const AltKey& key) const
+    {
+        return std::ranges::find(mappings, key, &value_type::first);
+    }
+    template<std::equality_comparable_with<Value> AltValue>
+    requires (not std::equality_comparable_with<AltValue, Key>)
+    constexpr auto find(const AltValue& value) const
+    {
+        return std::ranges::find(mappings, value, &value_type::second);
+    }
+    template<std::equality_comparable_with<Key> AltKey>
+    constexpr auto find_by_key(const Key& key) const
+    {
+        return std::ranges::find(mappings, key, &value_type::first);
+    }
+    template<std::equality_comparable_with<Value> AltValue>
+    constexpr auto find_by_value(const AltValue& value) const
+    {
+        return std::ranges::find(mappings, value, &value_type::second);
     }
 
     std::array<value_type, N> mappings;

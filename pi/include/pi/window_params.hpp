@@ -4,13 +4,15 @@
 
 #include <cstdint>
 #include <string>
-// #include <string_view>
+#include <string_view>
 
 #include <optional>
 #include <utility>
 #include <array>
 
 #include <algorithm>
+#include <numeric>
+#include <functional>
 
 #include <cstdio>
 
@@ -76,30 +78,24 @@ void write_window_flags(std::uint32_t flags, Container& into_names)
     }
 }
 
-inline constexpr std::uint32_t read_window_flags(const YAML::Node& node)
+inline constexpr std::uint32_t read_window_flag(const YAML::Node& node)
 {
-    namespace ranges = std::ranges;
-    using lookup_elem_t = std::pair<std::uint32_t, std::string_view>;
-
-    if (node.IsScalar()) {
-        const auto search = ranges::find(pi::window_flag_names,
-                                         node.as<std::string>(),
-                                         &lookup_elem_t::second);
-        if (not search) { return 0u; }
+    if (not node.IsScalar()) { return 0u; }
+    const auto name = node.as<std::string>();
+    if (const auto search = pi::window_flag_names.find(name)) {
         return search->first;
     }
-    if (not node.IsSequence()) { return 0u; }
+    return 0u;
+}
+
+inline constexpr std::uint32_t read_window_flags(const YAML::Node& sequence)
+{
+    if (not sequence.IsSequence()) { return 0u; }
+    // return std::transform_reduce(sequence.begin(), sequence.end(),
+    //                              read_window_flag, std::bit_or{});
 
     std::uint32_t flags = 0u;
-    for (const auto name : node) {
-        if (not name.IsScalar()) { continue; }
-        const auto search = ranges::find(pi::window_flag_names,
-                                         name.as<std::string>(),
-                                         &lookup_elem_t::second);
-        if (not search) { continue; }
-        std::printf("Using flag %s\n", search->second);
-        flags |= search->first;
-    }
+    for (const auto elem : sequence) { flags |= read_window_flag(elem); }
     return flags;
 }
 }
@@ -207,7 +203,7 @@ struct YAML::convert<pi::window_params> {
                 }
             }
             else if (flags.IsScalar()) {
-                params.flags = pi::read_window_flags(flags);
+                params.flags = pi::read_window_flag(flags);
             }
             else {
                 YAML::Exception error{ flags.Mark(), "Sequence Error" };
