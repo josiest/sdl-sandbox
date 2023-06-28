@@ -68,8 +68,17 @@ int main()
     SDL_Event event;
     while (not has_quit) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+            switch (event.type) {
+            case SDL_QUIT:
                 has_quit = true;
+                break;
+
+            case SDL_KEYDOWN: {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    has_quit = true;
+                }
+                }
+                break;
             }
         }
     }

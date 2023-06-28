@@ -40,54 +40,67 @@ inline SDL_Window* make_window(const window_params& params)
     return SDL_CreateWindow(name.c_str(), x, y, width, height, flags);
 }
 
-// static constexpr lookup_table<std::uint32_t, std::string_view, 21>
-// window_flag_names{
-//     { SDL_WINDOW_FULLSCREEN,            "fullscreen" },
-//     { SDL_WINDOW_FULLSCREEN_DESKTOP,    "fullscreen-desktop" },
-//     { SDL_WINDOW_OPENGL,                "opengl" },
-//     { SDL_WINDOW_VULKAN,                "vulkan" },
-//     { SDL_WINDOW_SHOWN,                 "shown" },
-//     { SDL_WINDOW_HIDDEN,                "hidden" },
-//     { SDL_WINDOW_BORDERLESS,            "borderless" },
-//     { SDL_WINDOW_RESIZABLE,             "resizable" },
-//     { SDL_WINDOW_MINIMIZED,             "minimized" },
-//     { SDL_WINDOW_MAXIMIZED,             "maximized" },
-//     { SDL_WINDOW_INPUT_GRABBED,         "input-grabbed" },
-//     { SDL_WINDOW_MOUSE_FOCUS,           "mouse-focus" },
-//     { SDL_WINDOW_FOREIGN,               "foreign" },
-//     { SDL_WINDOW_ALLOW_HIGHDPI,         "allow-high-dpi" },
-//     { SDL_WINDOW_MOUSE_CAPTURE,         "mouse-capture" },
-//     { SDL_WINDOW_ALWAYS_ON_TOP,         "always-on-top" },
-//     { SDL_WINDOW_SKIP_TASKBAR,          "skip-taskbar" },
-//     { SDL_WINDOW_UTILITY,               "utility" },
-//     { SDL_WINDOW_TOOLTIP,               "tooltip" },
-//     { SDL_WINDOW_POPUP_MENU,            "popup-menu" }
-// };
-// 
-// template<typename Container>
-// requires can_push_back<Container, std::string>
-// void write_window_flags(std::uint32_t flags, Container& into_names)
-// {
-//     for (const auto [flag, name] : window_flag_names) {
-//         if ((flags & flag) == flag) { into_names.push_back(name); }
-//     }
-// }
-// 
-// inline constexpr std::uint32_t read_window_flags(YAML::Node& flag_names)
-// {
-//     namespace ranges = std::ranges;
-//     using lookup_elem_t = std::pair<std::uint32_t, std::string_view>;
-// 
-//     std::uint32_t flags = 0u;
-//     for (const auto name : flag_names) {
-//         if (not name.IsScalar()) { continue; }
-//         const auto result = ranges::find(pi::window_flag_names, name,
-//                                          &lookup_elem_t::second);
-//         if (not search) { continue; }
-//         flags |= search->first;
-//     }
-//     return flags;
-// }
+static constexpr lookup_table<std::uint32_t, std::string_view, 20>
+window_flag_names{{
+    { SDL_WINDOW_FULLSCREEN,            "fullscreen" },
+    { SDL_WINDOW_FULLSCREEN_DESKTOP,    "fullscreen-desktop" },
+    { SDL_WINDOW_OPENGL,                "opengl" },
+    { SDL_WINDOW_VULKAN,                "vulkan" },
+    { SDL_WINDOW_SHOWN,                 "shown" },
+    { SDL_WINDOW_HIDDEN,                "hidden" },
+    { SDL_WINDOW_BORDERLESS,            "borderless" },
+    { SDL_WINDOW_RESIZABLE,             "resizable" },
+    { SDL_WINDOW_MINIMIZED,             "minimized" },
+    { SDL_WINDOW_MAXIMIZED,             "maximized" },
+    { SDL_WINDOW_INPUT_GRABBED,         "input-grabbed" },
+    { SDL_WINDOW_MOUSE_FOCUS,           "mouse-focus" },
+    { SDL_WINDOW_FOREIGN,               "foreign" },
+    { SDL_WINDOW_ALLOW_HIGHDPI,         "allow-high-dpi" },
+    { SDL_WINDOW_MOUSE_CAPTURE,         "mouse-capture" },
+    { SDL_WINDOW_ALWAYS_ON_TOP,         "always-on-top" },
+    { SDL_WINDOW_SKIP_TASKBAR,          "skip-taskbar" },
+    { SDL_WINDOW_UTILITY,               "utility" },
+    { SDL_WINDOW_TOOLTIP,               "tooltip" },
+    { SDL_WINDOW_POPUP_MENU,            "popup-menu" }
+}};
+
+template<typename Container>
+requires can_push_back<Container, std::string>
+void write_window_flags(std::uint32_t flags, Container& into_names)
+{
+    for (const auto [flag, name] : window_flag_names) {
+        if ((flags & flag) == flag) {
+            into_names.push_back(std::string{ name });
+        }
+    }
+}
+
+inline constexpr std::uint32_t read_window_flags(const YAML::Node& node)
+{
+    namespace ranges = std::ranges;
+    using lookup_elem_t = std::pair<std::uint32_t, std::string_view>;
+
+    if (node.IsScalar()) {
+        const auto search = ranges::find(pi::window_flag_names,
+                                         node.as<std::string>(),
+                                         &lookup_elem_t::second);
+        if (not search) { return 0u; }
+        return search->first;
+    }
+    if (not node.IsSequence()) { return 0u; }
+
+    std::uint32_t flags = 0u;
+    for (const auto name : node) {
+        if (not name.IsScalar()) { continue; }
+        const auto search = ranges::find(pi::window_flag_names,
+                                         name.as<std::string>(),
+                                         &lookup_elem_t::second);
+        if (not search) { continue; }
+        std::printf("Using flag %s\n", search->second);
+        flags |= search->first;
+    }
+    return flags;
+}
 }
 
 template<>
@@ -105,9 +118,11 @@ struct YAML::convert<pi::window_params> {
             node["resolution"].push_back(*params.width);
             node["resolution"].push_back(*params.height);
         }
-        // if (params.flags) {
-        //     pi::write_window_flags(*params.flags, node["flags"]);
-        // }
+        if (params.flags) {
+            YAML::Node flags;
+            pi::write_window_flags(*params.flags, flags);
+            node["flags"] = flags;
+        }
         return node;
     }
 
@@ -175,11 +190,32 @@ struct YAML::convert<pi::window_params> {
                             error.what());
             }
         }
-        // if (const auto flags = node["flags"]) {
-        //     if (flags.IsSequence() and flags.size() <= 32) {
-        //         params.flags = pi::read_window_flags(flags)
-        //     }
-        // }
+        if (const auto flags = node["flags"]) {
+            if (flags.IsSequence()) {
+                if (flags.size() <= 32) {
+                    params.flags = pi::read_window_flags(flags);
+                }
+                else {
+                    const YAML::Exception error{ flags.Mark(),
+                                                 "Flag Sequence Error" };
+                    std::printf("%s\n"
+                                "Tried decoding yaml as a bit-wise integer "
+                                "flag, but there are more than 32 flags and "
+                                "only 32 bits in an integer\n",
+                                error.what());
+                }
+            }
+            else if (flags.IsScalar()) {
+                params.flags = pi::read_window_flags(flags);
+            }
+            else {
+                YAML::Exception error{ flags.Mark(), "Sequence Error" };
+                std::printf("%s\n"
+                            "Tried decoding yaml as a sequence of bit-wise "
+                            "flag names, but the value was not a sequence\n",
+                            error.what());
+            }
+        }
         return true;
     }
 };
