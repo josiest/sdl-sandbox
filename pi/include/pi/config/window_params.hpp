@@ -5,10 +5,11 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
-
 #include <optional>
-#include <utility>
-#include <array>
+
+#include <concepts>
+#include <ranges>
+#include <iterator>
 
 #include <algorithm>
 #include <numeric>
@@ -16,7 +17,7 @@
 
 #include <cstdio>
 
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_video.h>
 #include <yaml-cpp/yaml.h>
 
 inline namespace pi {
@@ -88,11 +89,19 @@ inline constexpr std::uint32_t read_window_flag(const YAML::Node& node)
     return 0u;
 }
 
-inline constexpr std::uint32_t read_window_flags(const YAML::Node& sequence)
+template<std::ranges::input_range FlagSequence,
+         std::unsigned_integral FlagType>
+
+requires std::convertible_to<
+    std::indirect_result_t<decltype(read_window_flag),
+                           std::ranges::iterator_t<FlagSequence>>,
+    FlagType>
+inline constexpr FlagType
+read_window_flags(FlagSequence && flags, FlagType init)
 {
-    if (not sequence.IsSequence()) { return 0u; }
-    return std::transform_reduce(sequence.begin(), sequence.end(),
-                                 0u, std::bit_or{}, read_window_flag);
+    namespace ranges = std::ranges;
+    return std::transform_reduce(ranges::begin(flags), ranges::end(flags),
+                                 init, std::bit_or{}, read_window_flag);
 }
 }
 
@@ -186,7 +195,7 @@ struct YAML::convert<pi::window_params> {
         if (const auto flags = node["flags"]) {
             if (flags.IsSequence()) {
                 if (flags.size() <= 32) {
-                    params.flags = pi::read_window_flags(flags);
+                    params.flags = pi::read_window_flags(flags, 0u);
                 }
                 else {
                     const YAML::Exception error{ flags.Mark(),
