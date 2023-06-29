@@ -1,10 +1,27 @@
 #include "poly/system.hpp"
 #include "pi/paths.hpp"
+#include "pi/event_sink.hpp"
 
 #include <cstddef>
 #include <cstdio>
 
 #include <SDL2/SDL.h>
+
+namespace poly {
+struct input_manager{
+    void connect_to_sink(pi::event_sink& events)
+    {
+        events.on_quit().connect<&input_manager::on_quit>(*this);
+        events.on_keydown().connect<&input_manager::on_keydown>(*this);
+    }
+    void on_quit() { has_quit = true; }
+    void on_keydown(const SDL_KeyboardEvent& event)
+    {
+        if (event.keysym.sym == SDLK_ESCAPE) { has_quit = true; }
+    }
+    bool has_quit = false;
+};
+}
 
 int main()
 { 
@@ -14,24 +31,12 @@ int main()
         std::printf("Fatal error: %s\n", system.error().c_str());
         return EXIT_FAILURE;
     }
+    pi::event_sink events;
+    input_manager input;
+    input.connect_to_sink(events);
 
-    bool has_quit = false;
-    SDL_Event event;
-    while (not has_quit) {
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                has_quit = true;
-                break;
-
-            case SDL_KEYDOWN: {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    has_quit = true;
-                }
-                }
-                break;
-            }
-        }
+    while (not input.has_quit) {
+        events.poll();
     }
     return EXIT_SUCCESS;
 }

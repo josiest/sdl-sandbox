@@ -10,4 +10,5 @@ target_include_directories(sketch PRIVATE ../pi/include include)
 
 find_package(SDL2 REQUIRED)
 find_package(yaml-cpp REQUIRED)
-target_link_libraries(sketch PRIVATE SDL2 yaml-cpp)
+find_package(EnTT REQUIRED)
+target_link_libraries(sketch PRIVATE SDL2 yaml-cpp EnTT::EnTT)
