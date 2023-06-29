@@ -1,5 +1,5 @@
 #pragma once
-#include "pi/sdl_deleter.hpp"
+#include "pi/system/sdl_deleter.hpp"
 
 #include <string>
 #include <filesystem>

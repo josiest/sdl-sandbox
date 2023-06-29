@@ -1,6 +1,6 @@
 #include "poly/system.hpp"
-#include "pi/paths.hpp"
-#include "pi/event_sink.hpp"
+#include "pi/config/paths.hpp"
+#include "pi/events/event_sink.hpp"
 
 #include <cstddef>
 #include <cstdio>
