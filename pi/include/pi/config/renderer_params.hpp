@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include <optional>
+#include <SDL2/SDL_render.h>
 
 inline namespace pi {
 

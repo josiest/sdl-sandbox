@@ -1,6 +1,7 @@
 #pragma once
 #include "pi/containers/concepts.hpp"
 #include "pi/containers/lookup_table.hpp"
+#include "pi/config/flags.hpp"
 
 #include <cstdint>
 #include <string>
@@ -78,31 +79,6 @@ void write_window_flags(std::uint32_t flags, Container& into_names)
         }
     }
 }
-
-inline constexpr std::uint32_t read_window_flag(const YAML::Node& node)
-{
-    if (not node.IsScalar()) { return 0u; }
-    const auto name = node.as<std::string>();
-    if (const auto search = pi::window_flag_names.find(name)) {
-        return search->first;
-    }
-    return 0u;
-}
-
-template<std::ranges::input_range FlagSequence,
-         std::unsigned_integral FlagType>
-
-requires std::convertible_to<
-    std::indirect_result_t<decltype(read_window_flag),
-                           std::ranges::iterator_t<FlagSequence>>,
-    FlagType>
-inline constexpr FlagType
-read_window_flags(FlagSequence && flags, FlagType init)
-{
-    namespace ranges = std::ranges;
-    return std::transform_reduce(ranges::begin(flags), ranges::end(flags),
-                                 init, std::bit_or{}, read_window_flag);
-}
 }
 
 template<>
@@ -135,7 +111,7 @@ struct YAML::convert<pi::window_params> {
             std::printf("%s\n",
                         "Tried decoding yaml as SDL window params, but the "
                         "yaml source is not a map\n", error.what());
-            return true;
+            return false;
         }
         if (const auto name = node["name"]) {
             if (name.IsScalar()) {
@@ -195,7 +171,8 @@ struct YAML::convert<pi::window_params> {
         if (const auto flags = node["flags"]) {
             if (flags.IsSequence()) {
                 if (flags.size() <= 32) {
-                    params.flags = pi::read_window_flags(flags, 0u);
+                    params.flags = pi::read_flag_names(pi::window_flag_names,
+                                                       flags, 0u);
                 }
                 else {
                     const YAML::Exception error{ flags.Mark(),
@@ -208,7 +185,8 @@ struct YAML::convert<pi::window_params> {
                 }
             }
             else if (flags.IsScalar()) {
-                params.flags = pi::read_window_flag(flags);
+                params.flags = pi::read_flag_name(pi::window_flag_names,
+                                                  flags, 0u);
             }
             else {
                 YAML::Exception error{ flags.Mark(), "Sequence Error" };
