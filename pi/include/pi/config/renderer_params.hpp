@@ -1,13 +1,11 @@
 #pragma once
-#include "pi/containers/concepts.hpp"
-#include "pi/containers/lookup_table.hpp"
-#include "pi/config/flags.hpp"
-
 #include <cstdint>
-#include <string>
-#include <string_view>
-
 #include <optional>
+
+#include "pi/config/error_messages.hpp"
+#include "pi/config/sdl_primitives/renderer_flags.hpp"
+#include "pi/config/sdl_primitives/flags.hpp"
+
 #include <SDL2/SDL_render.h>
 
 inline namespace pi {
@@ -25,13 +23,6 @@ inline SDL_Renderer* make_renderer(SDL_Window* window,
     return SDL_CreateRenderer(window, index, flags);
 }
 
-static constexpr lookup_table<std::uint32_t, std::string_view, 4>
-renderer_flag_names {
-    { SDL_RENDERER_SOFTWARE,        "software" },
-    { SDL_RENDERER_ACCELERATED,     "accelerated" },
-    { SDL_RENDERER_PRESENTVSYNC,    "present-vsync" },
-    { SDL_RENDERER_TARGETTEXTURE,   "target-texture" }
-};
 }
 
 template<>
@@ -42,57 +33,32 @@ struct YAML::convert<pi::renderer_params> {
         YAML::Node node;
         if (params.index) { node["index"] = *params.index; }
         if (params.flags) {
-            YAML::Node flags;
-            pi::write_flags(pi::renderer_flag_names, *params.flags, flags);
-            node["flags"] = flags;
+            node["flags"] = pi::encode_flags<SDL_RendererFlags>(*params.flags);
         }
         return node;
     }
-
     static bool decode(const YAML::Node& node, pi::renderer_params& params)
     {
+        namespace msg = YAML::ErrorMsg;
         if (not node.IsMap()) {
-            const YAML::Exception error{ node.Mark(), "Map Error" };
-            std::printf("%s\n"
-                        "Couldn't read renderer parameters because the "
-                        "yaml source isn't a map\n", error.what());
+            msg::error(node, msg::not_a_map);
             return false;
         }
+        using as_int = YAML::convert<int>;
         if (const auto index = node["index"]) {
-            if (int val; YAML::convert<int>::decode(index, val)) {
+            if (int val; as_int::decode(index, val)) {
                 params.index = val;
             }
             else {
-                const YAML::Exception error{ index.Mark(), "Integer Error" };
-                std::printf("%s\n"
-                            "Failed to parse renderer index value \"%s\" "
-                            "as an integer\n", error.what(), index.Scalar());
+                msg::error(index, msg::not_an_integer);
             }
         }
         if (const auto flags = node["flags"]) {
-            if (flags.IsScalar()) {
-                params.flags = pi::read_flag_name(pi::renderer_flag_names,
-                                                  flags, 0u);
+            std::uint32_t value = SDL_RENDERER_ACCELERATED;
+            if (not pi::read_flags_into<SDL_RendererFlags>(flags, value)) {
+                msg::error(flags, "encountered errors reading renderer flags");
             }
-            if (flags.IsSequence()) {
-                if (flags.size() <= 32) {
-                    params.flags = pi::read_flag_names(pi::renderer_flag_names,
-                                                       flags, 0u);
-                }
-                else {
-                    const YAML::Exception error{ flags.Mark(),
-                                                 "Flag Sequence Error" };
-                    std::printf("%s\n"
-                                "Encountered more than 32 values when reading"
-                                "renderer flags, but flags are only 32 bits\n",
-                                error.what());
-                }
-            }
-            else {
-                const YAML::Exception error{ flags.Mark(), "Sequence Error" };
-                std::printf("%s\nCouldn't read renderer flags\n",
-                            error.what());
-            }
+            params.flags = value;
         }
         return true;
     }
