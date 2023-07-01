@@ -9,6 +9,13 @@
 
 template<>
 struct YAML::convert<SDL_WindowFlags>{
+    static constexpr auto begin() { return flag_names.begin(); }
+    static constexpr auto end() { return flag_names.end(); }
+    static constexpr auto find(std::string_view name)
+    {
+        return flag_names.find(name);
+    }
+
     static constexpr lookup_table<std::uint32_t, std::string_view, 20>
     flag_names{
         { SDL_WINDOW_FULLSCREEN,            "fullscreen" },
@@ -32,10 +39,4 @@ struct YAML::convert<SDL_WindowFlags>{
         { SDL_WINDOW_TOOLTIP,               "tooltip" },
         { SDL_WINDOW_POPUP_MENU,            "popup-menu" }
     };
-    static constexpr auto begin() { return flag_names.begin(); }
-    static constexpr auto end() { return flag_names.end(); }
-    static constexpr auto find(std::string_view name)
-    {
-        return flag_names.find(name);
-    }
 };

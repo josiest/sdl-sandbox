@@ -1,4 +1,5 @@
 #include "poly/system.hpp"
+#include "pi/primitives.hpp"
 #include "pi/system.hpp"
 #include "pi/config.hpp"
 
@@ -28,6 +29,7 @@ auto error(std::string_view message)
 std::expected<poly::system, std::string>
 poly::system::load_from_config(const fs::path& config_path)
 {
+    std::uint32_t init_flags = SDL_INIT_VIDEO;
     pi::window_params window_params;
     pi::renderer_params renderer_params;
 
@@ -41,6 +43,9 @@ poly::system::load_from_config(const fs::path& config_path)
                         "yaml source is not a Map\n", config_path.c_str());
         }
         else {
+            if (const auto init_config = config["init"]) {
+                pi::read_flags_into<SDL_InitFlags>(init_config, init_flags);
+            }
             if (const auto window_config = config["window"]) {
                 using as_window = YAML::convert<pi::window_params>;
                 if (not as_window::decode(window_config, window_params)) {
@@ -57,7 +62,7 @@ poly::system::load_from_config(const fs::path& config_path)
             }
         }
     }
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(init_flags) != 0) {
         return error("Failed to initialize SDL");
     }
     poly::system system;
