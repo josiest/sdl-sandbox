@@ -68,17 +68,6 @@ window_flag_names{
     { SDL_WINDOW_TOOLTIP,               "tooltip" },
     { SDL_WINDOW_POPUP_MENU,            "popup-menu" }
 };
-
-template<typename Container>
-requires can_push_back<Container, std::string>
-void write_window_flags(std::uint32_t flags, Container& into_names)
-{
-    for (const auto [flag, name] : window_flag_names) {
-        if ((flags & flag) == flag) {
-            into_names.push_back(std::string{ name });
-        }
-    }
-}
 }
 
 template<>
@@ -98,7 +87,7 @@ struct YAML::convert<pi::window_params> {
         }
         if (params.flags) {
             YAML::Node flags;
-            pi::write_window_flags(*params.flags, flags);
+            pi::write_flags(pi::window_flag_names, *params.flags, flags);
             node["flags"] = flags;
         }
         return node;

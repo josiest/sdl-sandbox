@@ -1,5 +1,6 @@
 #include "poly/system.hpp"
 #include "pi/config/window_params.hpp"
+#include "pi/config/renderer_params.hpp"
 #include "pi/system/sdl_deleter.hpp"
 
 #include <SDL2/SDL.h>
@@ -28,6 +29,7 @@ std::expected<poly::system, std::string>
 poly::system::load_from_config(const fs::path& config_path)
 {
     pi::window_params window_params;
+    pi::renderer_params renderer_params;
 
     if (not fs::exists(config_path)) {
         std::printf("Unable to load config because "
@@ -43,6 +45,10 @@ poly::system::load_from_config(const fs::path& config_path)
                 YAML::convert<pi::window_params>
                     ::decode(window_config, window_params);
             }
+            if (const auto renderer_config = config["renderer"]) {
+                YAML::convert<pi::renderer_params>
+                    ::decode(renderer_config, renderer_params);
+            }
         }
     }
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -53,8 +59,8 @@ poly::system::load_from_config(const fs::path& config_path)
     if (not system.window) {
         return error("Failed to load SDL Window");
     }
-    system.renderer.reset(SDL_CreateRenderer(system.window.get(), -1,
-                                             SDL_RENDERER_ACCELERATED));
+    system.renderer.reset(pi::make_renderer(system.window.get(),
+                                            renderer_params));
     if (not system.renderer) {
         return error("Failed to load SDL Renderer");
     }

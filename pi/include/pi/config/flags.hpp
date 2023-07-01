@@ -12,16 +12,21 @@
 
 namespace pi {
 
-//template<typename Container>
-//requires can_push_back<Container, std::string>
-//void write_window_flags(std::uint32_t flags, Container& into_names)
-//{
-//    for (const auto [flag, name] : window_flag_names) {
-//        if ((flags & flag) == flag) {
-//            into_names.push_back(std::string{ name });
-//        }
-//    }
-//}
+template<std::unsigned_integral FlagType,
+         std::ranges::input_range LookupRange>
+
+requires std::convertible_to<std::ranges::range_value_t<LookupRange>,
+                             std::pair<FlagType, std::string_view>>
+
+void write_flags(LookupRange && lookup_table,
+                 FlagType flags, YAML::Node& into_names)
+{
+    for (const auto [flag, name] : lookup_table) {
+        if ((flags & flag) == flag) {
+            into_names.push_back(std::string{ name });
+        }
+    }
+}
 
 template<std::unsigned_integral FlagType,
          std::ranges::input_range LookupRange>
