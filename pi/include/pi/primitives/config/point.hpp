@@ -1,5 +1,5 @@
 #pragma once
-#include "pi/config/error_messages.hpp"
+#include "pi/config/errors.hpp"
 
 #include <cstdio>
 #include <SDL2/SDL_rect.h>

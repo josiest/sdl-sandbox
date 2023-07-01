@@ -2,9 +2,9 @@
 #include <cstdint>
 #include <optional>
 
-#include "pi/config/error_messages.hpp"
-#include "pi/config/sdl_primitives/renderer_flags.hpp"
-#include "pi/config/sdl_primitives/flags.hpp"
+#include "pi/config/errors.hpp"
+#include "pi/primitives/config/renderer_flags.hpp"
+#include "pi/primitives/config/flags.hpp"
 
 #include <SDL2/SDL_render.h>
 

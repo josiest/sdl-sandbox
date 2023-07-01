@@ -3,6 +3,7 @@
 #include <string_view>
 
 #include "pi/containers/lookup_table.hpp"
+#include <yaml-cpp/node/convert.h>
 #include <SDL2/SDL_render.h>
 
 template<>

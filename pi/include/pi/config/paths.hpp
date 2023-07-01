@@ -5,7 +5,7 @@
 
 inline namespace pi {
 
-const std::filesystem::path& root_path()
+inline const std::filesystem::path& root_path()
 {
     namespace fs = std::filesystem;
     static const fs::path root =
@@ -13,12 +13,12 @@ const std::filesystem::path& root_path()
     return root;
 }
 
-std::filesystem::path resource_dir()
+inline std::filesystem::path resource_dir()
 {
     return root_path()/"resources";
 }
 
-std::filesystem::path resource_path(std::string_view filename)
+inline std::filesystem::path resource_path(std::string_view filename)
 {
     return resource_dir()/filename;
 }

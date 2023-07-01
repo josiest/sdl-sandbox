@@ -2,13 +2,10 @@
 
 #include <cstdint>
 #include <string_view>
-#include <string>
-
-#include <SDL2/SDL_video.h>
-#include <yaml-cpp/node/convert.h>
 
 #include "pi/containers/lookup_table.hpp"
-#include "pi/config/sdl_primitives/flags.hpp"
+#include <yaml-cpp/node/convert.h>
+#include <SDL2/SDL_video.h>
 
 template<>
 struct YAML::convert<SDL_WindowFlags>{

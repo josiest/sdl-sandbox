@@ -1,8 +1,6 @@
 #include "poly/system.hpp"
-#include "pi/config/error_messages.hpp"
-#include "pi/config/window_params.hpp"
-#include "pi/config/renderer_params.hpp"
-#include "pi/system/sdl_deleter.hpp"
+#include "pi/system.hpp"
+#include "pi/config.hpp"
 
 #include <SDL2/SDL.h>
 #include <yaml-cpp/yaml.h>

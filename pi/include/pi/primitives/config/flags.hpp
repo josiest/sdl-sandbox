@@ -1,5 +1,5 @@
 #pragma once
-#include "pi/config/error_messages.hpp"
+#include "pi/config/errors.hpp"
 
 #include <type_traits>
 #include <concepts>
