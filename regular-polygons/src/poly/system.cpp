@@ -1,4 +1,5 @@
 #include "poly/system.hpp"
+#include "pi/config/error_messages.hpp"
 #include "pi/config/window_params.hpp"
 #include "pi/config/renderer_params.hpp"
 #include "pi/system/sdl_deleter.hpp"
@@ -17,6 +18,7 @@
 #include <sstream>
 
 namespace fs = std::filesystem;
+namespace msg = YAML::ErrorMsg;
 
 auto error(std::string_view message)
 {
@@ -42,12 +44,18 @@ poly::system::load_from_config(const fs::path& config_path)
         }
         else {
             if (const auto window_config = config["window"]) {
-                YAML::convert<pi::window_params>
-                    ::decode(window_config, window_params);
+                using as_window = YAML::convert<pi::window_params>;
+                if (not as_window::decode(window_config, window_params)) {
+                    msg::error(window_config,
+                               "encountered errors reading window config");
+                }
             }
             if (const auto renderer_config = config["renderer"]) {
-                YAML::convert<pi::renderer_params>
-                    ::decode(renderer_config, renderer_params);
+                using as_renderer = YAML::convert<pi::renderer_params>;
+                if (not as_renderer::decode(renderer_config, renderer_params)) {
+                    msg::error(renderer_config,
+                               "encountered errors reading renderer config");
+                }
             }
         }
     }

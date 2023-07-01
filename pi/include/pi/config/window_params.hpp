@@ -2,6 +2,8 @@
 #include "pi/containers/concepts.hpp"
 #include "pi/containers/lookup_table.hpp"
 #include "pi/config/flags.hpp"
+#include "pi/config/error_messages.hpp"
+#include "pi/config/sdl_primitives/point.hpp"
 
 #include <cstdint>
 #include <string>
@@ -19,30 +21,36 @@
 #include <cstdio>
 
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_rect.h>
 #include <yaml-cpp/yaml.h>
 
 inline namespace pi {
 
+inline namespace defaults {
+
+constexpr SDL_Point window_position{
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED
+};
+constexpr SDL_Point window_size{ 640, 480 };
+}
+
 /** A data type for SDL_Window parameters */
 struct window_params{
     std::optional<std::string> name = std::nullopt;
-    std::optional<int> x = std::nullopt;
-    std::optional<int> y = std::nullopt;
-    std::optional<std::uint32_t> width = std::nullopt;
-    std::optional<std::uint32_t> height = std::nullopt;
+    std::optional<SDL_Point> position = std::nullopt;
+    std::optional<SDL_Point> size = std::nullopt;
     std::optional<std::uint32_t> flags = std::nullopt;
 };
 
 inline SDL_Window* make_window(const window_params& params)
 {
     const auto name = params.name.value_or("pi window");
-    const auto x = params.x.value_or(SDL_WINDOWPOS_UNDEFINED);
-    const auto y = params.y.value_or(SDL_WINDOWPOS_UNDEFINED);
-    const int width = params.width.value_or(640u);
-    const int height = params.height.value_or(480u);
-    const auto flags = params.flags.value_or(0);
+    const auto position = params.position.value_or(defaults::window_position);
+    const auto size = params.size.value_or(defaults::window_size);
+    const auto flags = params.flags.value_or(0u);
 
-    return SDL_CreateWindow(name.c_str(), x, y, width, height, flags);
+    return SDL_CreateWindow(name.c_str(), position.x, position.y,
+                                          size.x, size.y, flags);
 }
 
 static constexpr lookup_table<std::uint32_t, std::string_view, 20>
@@ -77,13 +85,11 @@ struct YAML::convert<pi::window_params> {
     {
         YAML::Node node;
         if (params.name) { node["name"] = *params.name; }
-        if (params.x and params.y) {
-            node["position"].push_back(*params.x);
-            node["position"].push_back(*params.y);
+        if (params.position) {
+            node["position"] = *params.position;
         }
-        if (params.width and params.height) {
-            node["resolution"].push_back(*params.width);
-            node["resolution"].push_back(*params.height);
+        if (params.size) {
+            node["size"] = *params.size;
         }
         if (params.flags) {
             YAML::Node flags;
@@ -95,11 +101,10 @@ struct YAML::convert<pi::window_params> {
 
     static bool decode(const YAML::Node& node, pi::window_params& params)
     {
+        namespace msg = YAML::ErrorMsg;
+
         if (not node.IsMap()) {
-            const YAML::Exception error{ node.Mark(), "Map Error" };
-            std::printf("%s\n",
-                        "Tried decoding yaml as SDL window params, but the "
-                        "yaml source is not a map\n", error.what());
+            msg::error(node, msg::not_a_map);
             return false;
         }
         if (const auto name = node["name"]) {
@@ -107,54 +112,24 @@ struct YAML::convert<pi::window_params> {
                 params.name = name.as<std::string>();
             }
             else {
-                const YAML::Exception error{ name.Mark(), "Scalar Error" };
-                std::printf("%s\n",
-                            "Tried decoding window name from yaml, but value "
-                            "is not scalar\n", error.what());
+                msg::error(name, "failed to read window name");
             }
         }
+        using as_point = YAML::convert<SDL_Point>;
         if (const auto position = node["position"]) {
-            if (position.IsSequence() and position.size() == 2) {
-                try {
-                    params.x = position[0].as<int>();
-                    params.y = position[1].as<int>();
-                }
-                catch (YAML::Exception error) {
-                    std::printf("%s\n"
-                                "Tried decoding yaml as an integer position "
-                                "but the sequence values weren't integers\n",
-                                error.what());
-                }
+            if (SDL_Point value; as_point::decode(position, value)) {
+                params.position = value;
             }
             else {
-                YAML::Exception error{ position.Mark(), "Sequence Error" };
-                std::printf("%s\n"
-                            "Tried decoding yaml as integer position but the "
-                            "yaml source was either not a sequence or didn't "
-                            "have exactly two values\n",
-                            error.what());
+                msg::error(position, "failed to read window position");
             }
         }
-        if (const auto resolution = node["resolution"]) {
-            if (resolution.IsSequence() and resolution.size() == 2) {
-                try {
-                    params.width = resolution[0].as<int>();
-                    params.height = resolution[1].as<int>();
-                }
-                catch (YAML::Exception error) {
-                    std::printf("%s\n"
-                                "Tried decoding yaml as an integer pair "
-                                "but the sequence values weren't integers\n",
-                                error.what());
-                }
+        if (const auto size = node["size"]) {
+            if (SDL_Point value; as_point::decode(size, value)) {
+                params.size = value;
             }
             else {
-                YAML::Exception error{ resolution.Mark(), "Sequence Error" };
-                std::printf("%s\n"
-                            "Tried decoding yaml as an integer pair but the "
-                            "yaml source was either not a sequence or didn't "
-                            "have exactly two values\n",
-                            error.what());
+                msg::error(size, "failed to read window size");
             }
         }
         if (const auto flags = node["flags"]) {
