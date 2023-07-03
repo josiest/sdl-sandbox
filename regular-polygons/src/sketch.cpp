@@ -21,13 +21,18 @@ struct input_manager{
     }
     bool has_quit = false;
 };
+
+auto& init_system()
+{
+    static auto config_path = pi::resource_path("config.yml");
+    static auto sys = pi::system::load_from_config(config_path.c_str());
+    return sys;
+}
 }
 
 int main()
 { 
-    const auto config_path = pi::resource_path("config.yml");
-    auto system = pi::system::load_from_config(config_path);
-    if (not system) {
+    if (const auto& system = poly::init_system(); not system) {
         std::printf("Fatal error: %s\n", system.error().c_str());
         return EXIT_FAILURE;
     }

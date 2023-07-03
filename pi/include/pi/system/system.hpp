@@ -23,7 +23,7 @@ inline namespace pi {
 class system {
 public:
     inline static std::expected<system, std::string>
-    load_from_config(const std::filesystem::path& config_path)
+    load_from_config(std::string_view config_path)
     {
         namespace fs = std::filesystem;
         namespace msg = YAML::ErrorMsg;
@@ -42,14 +42,14 @@ public:
         if (not fs::exists(config_path)) {
             std::printf("Unable to load config because "
                         "the path %s doesn't exist\n",
-                        config_path.c_str());
+                        config_path.data());
         }
         else if (const YAML::Node config =
-                    YAML::LoadFile(config_path.c_str()))  {
+                    YAML::LoadFile(config_path.data()))  {
             if (not config.IsMap()) {
                 std::printf("Couldn't load system config at %s "
                             "because yaml source is not a Map\n",
-                            config_path.c_str());
+                            config_path.data());
             }
             else {
                 if (const auto init_config = config["init"]) {
