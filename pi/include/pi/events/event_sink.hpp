@@ -2,7 +2,7 @@
 #include <entt/signal/sigh.hpp>
 #include <SDL2/SDL_events.h>
 
-namespace pi {
+inline namespace pi {
 struct event_sink{
     inline void poll()
     {

@@ -16,7 +16,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-namespace pi {
+inline namespace pi {
 
 template<typename EnumType, typename Integer>
 concept yaml_enum = requires(std::string_view name) {

@@ -1,4 +1,4 @@
-#include "poly/system.hpp"
+#include "pi/system.hpp"
 #include "pi/config.hpp"
 #include "pi/events.hpp"
 
@@ -7,7 +7,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace poly {
+inline namespace poly {
 struct input_manager{
     void connect_to_sink(pi::event_sink& events)
     {
@@ -26,13 +26,13 @@ struct input_manager{
 int main()
 { 
     const auto config_path = pi::resource_path("config.yml");
-    auto system = poly::system::load_from_config(config_path);
+    auto system = pi::system::load_from_config(config_path);
     if (not system) {
         std::printf("Fatal error: %s\n", system.error().c_str());
         return EXIT_FAILURE;
     }
     pi::event_sink events;
-    input_manager input;
+    poly::input_manager input;
     input.connect_to_sink(events);
 
     while (not input.has_quit) {
