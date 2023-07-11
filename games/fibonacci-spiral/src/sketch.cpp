@@ -31,11 +31,6 @@ int main()
     constexpr SDL_Color red{ 219, 0, 66, 255 };
     constexpr std::uint32_t num_frames = 9u;
 
-    fib::fibonacci_spiral(blue, red, num_frames)
-        .draw_rects_to(renderer);
-
-    SDL_RenderPresent(renderer);
-
     bool has_quit = false;
     while (not has_quit) {
 
@@ -45,6 +40,10 @@ int main()
                 has_quit = true;
             }
         }
+        fib::fibonacci_spiral(blue, red, num_frames)
+            .draw_rects_to(renderer);
+
+        SDL_RenderPresent(renderer);
     }
     return EXIT_SUCCESS;
 }
