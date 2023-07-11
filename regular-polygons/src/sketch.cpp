@@ -1,6 +1,6 @@
-#include "pi/system.hpp"
-#include "pi/config.hpp"
-#include "pi/events.hpp"
+#include "pi/systems/system.hpp"
+#include "pi/config/paths.hpp"
+#include "pi/events/event_sink.hpp"
 
 #include <cstddef>
 #include <cstdio>

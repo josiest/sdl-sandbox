@@ -9,6 +9,7 @@
 
 inline namespace pi {
 
+/** A simple map with a static size that allows for constexpr initialization */
 template<typename Key, typename Value, std::size_t N>
 struct lookup_table {
     // Container Types

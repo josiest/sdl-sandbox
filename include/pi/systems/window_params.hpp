@@ -1,8 +1,8 @@
 #pragma once
 #include "pi/config/errors.hpp"
-#include "pi/primitives/config/flags.hpp"
-#include "pi/primitives/config/point.hpp"
-#include "pi/primitives/config/window_flags.hpp"
+#include "pi/config/primitives.hpp"
+#include "pi/config/convert_flags.hpp"
+#include "pi/config/flags/window_flags.hpp"
 
 #include <cstdint>
 #include <string>
