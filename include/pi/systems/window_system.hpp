@@ -34,12 +34,14 @@ struct window_system {
     inline static window_system*
     load(system_graph& systems)
     {
+        if (not systems.load<pi::init_system>()) { return nullptr; }
         return load(systems, pi::window_params{});
     }
     inline static window_system*
     load(system_graph& systems, const YAML::Node& root)
     {
         namespace msg = YAML::ErrorMsg;
+        if (not systems.load<pi::init_system>(root)) { return nullptr; }
 
         pi::window_params params;
         if (not root or not root.IsMap()) { return load(systems, params); }
@@ -53,10 +55,13 @@ struct window_system {
         }
         return load(systems, params);
     }
+    SDL_Window* window() { return window_handle.get(); }
+    unique_window window_handle;
+
+private:
     inline static window_system*
     load(system_graph& systems, const pi::window_params& params)
     {
-        if (not systems.load<init_system>()) { return nullptr; }
         auto* window = pi::make_window(params);
         if (not window) {
             std::printf("Failed to create a window: %s\n", SDL_GetError());
@@ -64,7 +69,6 @@ struct window_system {
         }
         return &systems.emplace<window_system>(unique_window{ window });
     }
-    SDL_Window* window() { return window_handle.get(); }
-    unique_window window_handle;
+
 };
 }
