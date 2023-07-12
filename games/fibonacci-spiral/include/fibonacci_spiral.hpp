@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include <SDL2/SDL_render.h>
+#include "spiral_params.hpp"
 
 inline namespace fib {
 /** Truncate-lerp between two integers */
@@ -71,41 +72,39 @@ inline auto draw_rect(SDL_Renderer* renderer, const colored_rect& frame)
     SDL_RenderFillRect(renderer, &rect);
 }
 
-/** System that draws fibonacci spirals to a renderer */
-struct fibonacci_spiral {
-    /** Generate the fibonacci spiral sequence
-     *
-     * \param guide The frame to generate te spiral in
-     * \return a function that generates the fibonacci spiral sequence
-     *
-     * As a side effect, the guide will be changed with every call
-     * of the generator function
-     */
-    inline auto sequence(SDL_Rect& guide) const
-    {
-        return [this, &guide](std::uint32_t k) {
-            const float t = static_cast<float>(k)/num_frames;
-            return std::make_pair(next_subframe(guide, k),
-                                  fib::lerp(initial_color, final_color, t));
-        };
-    }
-    /** Draw the fibonacci spiral to the renderer */
-    inline void draw_rects_to(SDL_Renderer* renderer) const
-    {
-        namespace ranges = std::ranges;
-        namespace views = std::views;
+/** Generate the fibonacci spiral sequence
+ *
+ * \param guide The frame to generate te spiral in
+ * \return a function that generates the fibonacci spiral sequence
+ *
+ * As a side effect, the guide will be changed with every call
+ * of the generator function
+ */
+inline auto as_sequence(const fibonacci_spiral& spiral, SDL_Rect& guide)
+{
+    return [&](std::uint32_t k) {
+        const float t = static_cast<float>(k)/spiral.num_frames;
 
-        // the pattern will be draw to the entire screen
-        SDL_Rect render_frame{ 0, 0, 0, 0 };
-        SDL_GetRendererOutputSize(renderer, &render_frame.w,
-                                            &render_frame.h);
+        const auto color = fib::lerp(spiral.initial_color,
+                                     spiral.final_color, t);
 
-        // render each subframe with a different color
-        ranges::for_each(views::iota(0u, num_frames)
-                            | views::transform(sequence(render_frame)),
-                         std::bind_front(&draw_rect, renderer));
-    }
-    SDL_Color initial_color, final_color;
-    std::uint32_t num_frames;
-};
+        return std::make_pair(next_subframe(guide, k), color);
+    };
+}
+/** Draw the fibonacci spiral to the renderer */
+inline void draw_spiral(SDL_Renderer* renderer, const fibonacci_spiral& spiral)
+{
+    namespace ranges = std::ranges;
+    namespace views = std::views;
+
+    // the pattern will be draw to the entire screen
+    SDL_Rect render_frame{ 0, 0, 0, 0 };
+    SDL_GetRendererOutputSize(renderer, &render_frame.w,
+                                        &render_frame.h);
+
+    // render each subframe with a different color
+    ranges::for_each(views::iota(0u, spiral.num_frames)
+                        | views::transform(as_sequence(spiral, render_frame)),
+                     std::bind_front(&draw_rect, renderer));
+}
 }

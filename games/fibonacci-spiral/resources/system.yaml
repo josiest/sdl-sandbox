@@ -1,4 +1,4 @@
 window:
   name: Fibonacci Spiral
-  size: [340, 280]
+  size: [640, 480]
   flags: resizable

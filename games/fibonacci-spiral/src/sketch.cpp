@@ -25,11 +25,7 @@ int main()
         return EXIT_FAILURE;
     }
     SDL_Renderer* renderer = renderer_system->renderer();
-
-    // design parameters
-    constexpr SDL_Color blue{ 48, 118, 217, 255 };
-    constexpr SDL_Color red{ 219, 0, 66, 255 };
-    constexpr std::uint32_t num_frames = 9u;
+    const auto spiral = fib::load_spiral("spiral.yaml");
 
     bool has_quit = false;
     while (not has_quit) {
@@ -40,9 +36,7 @@ int main()
                 has_quit = true;
             }
         }
-        fib::fibonacci_spiral(blue, red, num_frames)
-            .draw_rects_to(renderer);
-
+        fib::draw_spiral(renderer, spiral);
         SDL_RenderPresent(renderer);
     }
     return EXIT_SUCCESS;
