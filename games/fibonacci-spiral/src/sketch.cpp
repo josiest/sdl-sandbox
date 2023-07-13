@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_events.h>
 
 #include "pi/config/paths.hpp"
 #include "pi/systems/system_graph.hpp"
