@@ -15,6 +15,9 @@ struct event_sink{
             case SDL_KEYDOWN:
                 keydown.publish(event.key);
                 break;
+            case SDL_KEYUP:
+                keyup.publish(event.key);
+                break;
             default:
                 break;
             }
@@ -22,9 +25,11 @@ struct event_sink{
     }
     inline auto on_quit() { return entt::sink{ quit }; }
     inline auto on_keydown() { return entt::sink{ keydown }; }
+    inline auto on_keyup() { return entt::sink{ keyup }; }
 
 private:
     entt::sigh<void()> quit;
     entt::sigh<void(const SDL_KeyboardEvent&)> keydown;
+    entt::sigh<void(const SDL_KeyboardEvent&)> keyup;
 };
 }
