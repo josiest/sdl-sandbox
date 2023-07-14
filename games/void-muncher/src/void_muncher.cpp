@@ -56,6 +56,7 @@ int main()
 
     muncher player;
     player.connect_to(axis);
+    player.reset(renderer);
 
     while (not input.has_quit) {
         events.poll();

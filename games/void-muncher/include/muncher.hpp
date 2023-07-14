@@ -24,6 +24,13 @@ struct muncher {
         bbox.x += speed*axis.first;
         bbox.y += speed*axis.second;
     }
+    void reset(SDL_Renderer* renderer)
+    {
+        int width = 0; int height = 0;
+        SDL_GetRendererOutputSize(renderer, &width, &height);
+        bbox.x = width/2.f;
+        bbox.y = height/2.f;
+    }
     inline SDL_Rect rounded_bbox() const
     {
         namespace ranges = std::ranges;
@@ -32,7 +39,6 @@ struct muncher {
         ranges::transform(bbox, ranges::begin(rounded), round_to_int);
         return rounded;
     }
-
     float speed = 0.1f;
     SDL_Color color = { 0x0, 0x0, 0x0, 0xff };
     SDL_FRect bbox = { 0.f, 0.f, 20.f, 20.f };
