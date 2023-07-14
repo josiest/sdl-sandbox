@@ -10,13 +10,7 @@
 
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard_axis.hpp"
-
-
-
-void print_axis(const pi::axis2d& axis)
-{
-    std::printf("[%d, %d]\n", axis.first, axis.second);
-}
+#include "muncher.hpp"
 
 struct quit_handler {
     void connect_to(pi::event_sink& sink)
@@ -59,15 +53,20 @@ int main()
 
     pi::keyboard_axis axis;
     axis.connect_to(events);
-    axis.on_tick().connect<&print_axis>();
 
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    muncher player;
+    player.connect_to(axis);
 
     while (not input.has_quit) {
         events.poll();
         axis.tick();
+
+        SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
+        SDL_RenderClear(renderer);
+
+        draw(renderer, player);
+        SDL_RenderPresent(renderer);
+
     }
     return EXIT_SUCCESS;
 }
