@@ -12,6 +12,7 @@ constexpr char invalid_node[] = "yaml node is invalid";
 
 constexpr char not_an_integer[] = "expecting an integer";
 constexpr char not_a_string[] = "expecting a string";
+constexpr char not_hex_color[] = "expecting a hex color (e.g 0x4287f5ff)";
 
 constexpr char not_a_sequence[] = "expecting a sequence";
 constexpr char not_int_sequence[] = "expecting an integer sequence";

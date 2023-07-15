@@ -8,7 +8,7 @@
 #include <SDL2/SDL_pixels.h>
 #include <yaml-cpp/yaml.h>
 
-#include "pi/config/primitives.hpp"
+#include "pi/config/color.hpp"
 #include "pi/config/paths.hpp"
 
 inline namespace fib {
