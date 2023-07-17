@@ -10,6 +10,7 @@
 
 #include <yaml-cpp/node/convert.h>
 #include "pi/config/errors.hpp"
+#include "pi/meta/color.hpp"
 
 inline namespace pi {
 
@@ -46,7 +47,7 @@ bool parse_hex_rgba(std::string_view text, Integer& r, Integer& g,
 std::string write_hex_rgb(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
     static char buf[8];
-    std::printf(buf, "0x%2x%2x%2x", r, g, b);
+    std::sprintf(buf, "0x%2x%2x%2x", r, g, b);
     return std::string{ buf };
 }
 
@@ -54,7 +55,7 @@ std::string write_hex_rgba(std::uint8_t r, std::uint8_t g,
                            std::uint8_t b, std::uint8_t a)
 {
     static char buf[10];
-    std::printf(buf, "0x%2x%2x%2x%2x", r, g, b, a);
+    std::sprintf(buf, "0x%2x%2x%2x%2x", r, g, b, a);
     return std::string{ buf };
 }
 }
@@ -88,5 +89,14 @@ struct YAML::convert<SDL_Color> {
         }
         msg::error(node, msg::not_hex_color);
         return false;
+    }
+
+    static auto reflect()
+    {
+        using namespace entt::literals;
+        using as_color = YAML::convert<SDL_Color>;
+        return pi::reflect<SDL_Color>()
+            .func<&as_color::encode>("yaml-encode"_hs)
+            .func<&as_color::decode>("yaml-decode"_hs);
     }
 };
