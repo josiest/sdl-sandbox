@@ -191,7 +191,6 @@ inline bool decode_map(const YAML::Node& node, entt::meta_any& obj)
     bool success = true;
     // TODO: forward declare decode functions
     using as_any = YAML::convert<entt::meta_any>;
-    using namespace entt::literals;
     for (const auto& elem : node) {
         const std::string prop_name = elem.first.Scalar();
         const auto prop_id = entt::hashed_string{ prop_name.c_str() };
@@ -226,7 +225,6 @@ bool decode(const YAML::Node& node, T& val)
 YAML::Node YAML::convert<entt::meta_any>
                ::encode(const entt::meta_any& obj)
 {
-    using namespace entt::literals;
     const auto type = obj.type();
     if (type.is_integral()) {
         return pi::config::encode_integer(obj);
@@ -243,16 +241,13 @@ YAML::Node YAML::convert<entt::meta_any>
 bool YAML::convert<entt::meta_any>
          ::decode(const YAML::Node& node, entt::meta_any& obj)
 {
-    using namespace entt::literals;
     namespace msg = YAML::ErrorMsg;
     if (not node) {
         std::printf("%s\n", msg::invalid_node);
         return false;
     }
     if (node.IsScalar()) {
-        using namespace entt::literals;
-        const bool result = pi::config::decode_scalar(node, obj);
-        return result;
+        return pi::config::decode_scalar(node, obj);
     }
     if (node.IsMap()) {
         return pi::config::decode_map(node, obj);
