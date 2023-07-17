@@ -114,50 +114,55 @@ inline bool decode_integer(const YAML::Node& node, entt::meta_any& obj)
     return false;
 }
 
+inline bool decode_with_function(const YAML::Node& node,
+                                 const entt::meta_func& decode_fn,
+                                 entt::meta_any& obj)
+{
+    if (not decode_fn.is_static()) {
+        // TODO: add more to message
+        std::printf("decode function isn't static\n");
+        return false;
+    }
+    if (decode_fn.arity() != 2) {
+        // TODO: add more to message
+        std::printf("wrong number of arguments to yaml decode\n");
+        return false;
+    }
+    const auto node_arg = decode_fn.arg(0);
+    if (node_arg != entt::resolve<const YAML::Node&>()) {
+        // TODO: add more to message
+        std::printf("first argument of yaml-decode is not node!\n");
+        return false;
+    }
+    const auto obj_arg = decode_fn.arg(1);
+    if (obj_arg != obj.type()) {
+        // TODO: add more to message
+        std::printf("second argument of yaml-decode is not correct!\n");
+        return false;
+    }
+    const auto ret_type = decode_fn.ret();
+    if (ret_type != entt::resolve<bool>()) {
+        // TODO: add more to message
+        std::printf("return type of yaml-decode is not bool!\n");
+        return false;
+    }
+    std::array args{ entt::meta_any{node}, obj.as_ref() };
+    auto decoded = decode_fn.invoke(obj, args.data(), args.size());
+    if (const bool succeeded = decoded.cast<bool>()) {
+        return succeeded;
+    }
+    else {
+        // TODO: add more info to message
+        std::printf("Failed to invoke yaml-decode\n");
+        return false;
+    }
+}
+
 inline bool decode_class(const YAML::Node& node, entt::meta_any& obj)
 {
     using namespace entt::literals;
     if (auto decode_fn = obj.type().func("yaml-decode"_hs)) {
-        if (not decode_fn.is_static()) {
-            // TODO: add more to message
-            std::printf("decode function isn't static\n");
-            return false;
-        }
-        if (decode_fn.arity() != 2) {
-            // TODO: add more to message
-            std::printf("wrong number of arguments to yaml decode\n");
-            return false;
-        }
-        const auto node_arg = decode_fn.arg(0);
-        if (node_arg != entt::resolve<const YAML::Node&>()) {
-            // TODO: add more to message
-            std::printf("first argument of yaml-decode is not node!\n");
-            return false;
-        }
-        const auto obj_arg = decode_fn.arg(1);
-        if (obj_arg != obj.type()) {
-            // TODO: add more to message
-            std::printf("second argument of yaml-decode is not correct!\n");
-            return false;
-        }
-        const auto ret_type = decode_fn.ret();
-        if (ret_type != entt::resolve<bool>()) {
-            // TODO: add more to message
-            std::printf("return type of yaml-decode is not bool!\n");
-            return false;
-        }
-        // TODO: do we even need to pass an array?
-        // TODO: if yes, use ref instead of copying?
-        std::array args{ entt::meta_any{node}, obj.as_ref() };
-        auto decoded = decode_fn.invoke(obj, args.data(), args.size() );
-        if (auto* succeeded = decoded.try_cast<bool>()) {
-            return *succeeded;
-        }
-        else {
-            // TODO: add more info to message
-            std::printf("Failed to invoke yaml-decode\n");
-            return false;
-        }
+        return decode_with_function(node, decode_fn, obj);
     }
     // TODO: decode non-specialized types
     std::printf("failed to decode class\n");
