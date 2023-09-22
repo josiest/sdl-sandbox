@@ -45,13 +45,13 @@ auto reflect<fib::fibonacci_spiral>()
 fib::fibonacci_spiral fib::load_spiral(std::string_view spiral_path)
 {
     fib::fibonacci_spiral spiral;
-    using as_spiral = YAML::convert<fib::fibonacci_spiral>;
-    const auto config = pi::load_config("spiral.yaml");
+    pi::reflect<fib::fibonacci_spiral>();
+    const auto config = pi::load_config(spiral_path);
     if (config) {
         if (pi::config::decode(*config, spiral)) { return spiral; }
     }
     else {
-        std::printf("%s\n", config.error());
+        std::printf("%s\n", config.error().c_str());
     }
     std::printf("unable to load spiral config, using defaults\n");
     return spiral;

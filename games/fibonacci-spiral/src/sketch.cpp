@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <cstdio>
 
 #include <SDL2/SDL_pixels.h>
@@ -10,7 +9,7 @@
 #include "pi/systems/renderer_system.hpp"
 #include "fibonacci_spiral.hpp"
 
-int main()
+int main(int argc, char * argv[])
 {
     pi::system_graph systems;
     if (const auto system_config = pi::load_config("system.yaml")) {

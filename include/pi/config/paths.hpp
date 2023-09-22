@@ -55,6 +55,6 @@ load_config(std::string_view filename)
                     "\"{}\" does not have correct read permissions",
                     config_path.string()));
     }
-    return YAML::LoadFile(config_path.c_str());
+    return YAML::LoadFile(config_path.string());
 }
 }
