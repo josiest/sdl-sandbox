@@ -4,6 +4,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_events.h>
 
+#define YAML_CPP_STATIC_DEFINE
 #include "pi/config/paths.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"

@@ -27,6 +27,20 @@ constexpr SDL_Color lerp(const SDL_Color& a, const SDL_Color& b, Real t)
     return SDL_Color{ fib::lerp(a.r, b.r, t), fib::lerp(a.g, b.g, t),
                       fib::lerp(a.b, b.b, t), fib::lerp(a.a, b.a, t) };
 }
+/** Divide an integer by a floating point number and round to nearest */
+template<std::integral Integer, std::floating_point Real>
+constexpr Integer rounded_divide(Integer numerator, Real denominator)
+{
+    const Real product = static_cast<Real>(numerator)/denominator;
+    return static_cast<Integer>(std::round(product));
+}
+/** Divide two integers as a floating point type */
+template<std::floating_point Real, std::integral IntegerA, std::integral IntegerB>
+constexpr Real divide(IntegerA numerator, IntegerB denominator)
+{
+    return static_cast<Real>(numerator)/static_cast<Real>(denominator);
+}
+
 /** Transform a guide rect into the next subframe of the fibonacci spiral
  *
  * \param guide changed into the next fibonacci spiral frame
@@ -38,8 +52,8 @@ constexpr SDL_Rect next_subframe(SDL_Rect& guide, std::uint32_t k)
 {
     using namespace std::numbers;
     const SDL_Rect rect = guide;
-    const SDL_Point frame{ static_cast<int>(guide.w/phi_v<float>),
-                           static_cast<int>(guide.h/phi_v<float>) };
+    const SDL_Point frame{ rounded_divide(guide.w, phi_v<float>),
+                           rounded_divide(guide.h, phi_v<float>) };
     switch (k % 4) {
     case 0:
         // slide the left edge inward by the golden ratio
@@ -83,8 +97,7 @@ inline auto draw_rect(SDL_Renderer* renderer, const colored_rect& frame)
 inline auto as_sequence(const fibonacci_spiral& spiral, SDL_Rect& guide)
 {
     return [&](std::uint32_t k) {
-        const float t = static_cast<float>(k)/spiral.num_frames;
-
+        const auto t = divide<float>(k, spiral.num_frames);
         const auto color = fib::lerp(spiral.initial_color,
                                      spiral.final_color, t);
 
