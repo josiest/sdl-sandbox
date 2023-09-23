@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <optional>
+#include <format>
 
 #include <string_view>
 
@@ -23,7 +24,7 @@ struct spiral_data {
     SDL_Color final_color = { 219, 0, 66, 255 };
     std::uint8_t num_frames = 9u;
 };
-spiral_data load_spiral(std::string_view spiral_path);
+spiral_data load_spiral(std::string_view spiral_name);
 }
 
 inline namespace pi {
@@ -41,9 +42,10 @@ auto reflect<fib::spiral_data>()
 }
 }
 
-fib::spiral_data fib::load_spiral(std::string_view spiral_path)
+fib::spiral_data
+fib::load_spiral(std::string_view spiral_name)
 {
-    pi::reflect<fib::spiral_data>();
+    const auto spiral_path = std::format("spirals/{}.yaml", spiral_name);
     const auto config = pi::load_config(spiral_path);
     fib::spiral_data spiral;
     if (config) {

@@ -7,6 +7,8 @@
 #include "pi/config/paths.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"
+
+#include "gameplay_settings.hpp"
 #include "fibonacci_spiral.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
@@ -25,8 +27,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         std::printf("Fatal error: unable to load fundamental systems\n");
         return EXIT_FAILURE;
     }
+
     SDL_Renderer* renderer = renderer_system->renderer();
-    const fib::spiral_data spiral = fib::load_spiral("spiral.yaml");
+    const fib::gameplay_settings settings = fib::load_settings("fibonacci.yaml");
+    const fib::spiral_data spiral = fib::load_spiral(settings.spiral);
 
     bool has_quit = false;
     while (not has_quit) {

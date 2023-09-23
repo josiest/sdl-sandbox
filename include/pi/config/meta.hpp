@@ -18,6 +18,14 @@ struct YAML::convert<entt::meta_any> {
 inline namespace pi {
 namespace config {
 
+template<typename T>
+concept yaml_decodable =
+    std::default_initializable<T> and
+requires(T& val, const YAML::Node& node) {
+    { YAML::convert<T>::decode(node, val) } -> std::same_as<bool>;
+};
+
+
 inline YAML::Node encode_unsigned_integer(const entt::meta_any & number)
 {
     const auto type = number.type();
@@ -66,12 +74,24 @@ inline YAML::Node encode_class(const entt::meta_any & obj)
     return YAML::Node{};
 }
 
+// TODO: replace with decode_yaml
 template<typename Number>
 requires std::is_arithmetic_v<Number>
 inline bool decode_number_as(const YAML::Node & number, entt::meta_any & obj)
 {
     Number val;
     if (YAML::convert<Number>::decode(number, val)) {
+        obj = val;
+        return true;
+    }
+    return false;
+}
+
+template<yaml_decodable ValueType>
+inline bool decode_yaml(const YAML::Node & node, entt::meta_any & obj)
+{
+    ValueType val;
+    if (YAML::convert<ValueType>::decode(node, val)) {
         obj = val;
         return true;
     }
@@ -158,6 +178,10 @@ inline bool decode_class(const YAML::Node & node, entt::meta_any & obj)
     using namespace entt::literals;
     if (auto decode_fn = obj.type().func("yaml-decode"_hs)) {
         return decode_with_function(node, decode_fn, obj);
+    }
+    if (obj.type() == entt::resolve<std::string>())
+    {
+        return decode_yaml<std::string>(node, obj);
     }
     // TODO: decode non-specialized types
     std::printf("failed to decode class\n");
