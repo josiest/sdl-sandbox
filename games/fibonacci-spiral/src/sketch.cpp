@@ -26,7 +26,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         return EXIT_FAILURE;
     }
     SDL_Renderer* renderer = renderer_system->renderer();
-    const auto spiral = fib::load_spiral("spiral.yaml");
+    const fib::spiral_data spiral = fib::load_spiral("spiral.yaml");
 
     bool has_quit = false;
     while (not has_quit) {

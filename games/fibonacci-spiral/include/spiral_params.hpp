@@ -18,34 +18,34 @@
 #include "pi/config/meta.hpp"
 
 inline namespace fib {
-struct fibonacci_spiral {
+struct spiral_data {
     SDL_Color initial_color = { 48, 118, 217, 255 };
     SDL_Color final_color = { 219, 0, 66, 255 };
     std::uint8_t num_frames = 9u;
 };
-fibonacci_spiral load_spiral(std::string_view spiral_path);
+spiral_data load_spiral(std::string_view spiral_path);
 }
 
 inline namespace pi {
 template<>
-auto reflect<fib::fibonacci_spiral>()
+auto reflect<fib::spiral_data>()
 {
     using namespace entt::literals;
     YAML::convert<SDL_Color>::reflect();
 
-    return entt::meta<fib::fibonacci_spiral>()
+    return entt::meta<fib::spiral_data>()
         .type("fibonacci-spiral"_hs)
-        .data<&fib::fibonacci_spiral::initial_color>("initial-color"_hs)
-        .data<&fib::fibonacci_spiral::final_color>("final-color"_hs)
-        .data<&fib::fibonacci_spiral::num_frames>("num-frames"_hs);
+        .data<&fib::spiral_data::initial_color>("initial-color"_hs)
+        .data<&fib::spiral_data::final_color>("final-color"_hs)
+        .data<&fib::spiral_data::num_frames>("num-frames"_hs);
 }
 }
 
-fib::fibonacci_spiral fib::load_spiral(std::string_view spiral_path)
+fib::spiral_data fib::load_spiral(std::string_view spiral_path)
 {
-    fib::fibonacci_spiral spiral;
-    pi::reflect<fib::fibonacci_spiral>();
+    pi::reflect<fib::spiral_data>();
     const auto config = pi::load_config(spiral_path);
+    fib::spiral_data spiral;
     if (config) {
         if (pi::config::decode(*config, spiral)) { return spiral; }
     }

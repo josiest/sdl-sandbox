@@ -17,8 +17,7 @@ inline namespace fib {
 template<std::integral Integer, std::floating_point Real>
 constexpr Integer lerp(Integer a, Integer b, Real t)
 {
-    return static_cast<Integer>(std::lerp(static_cast<Real>(a),
-                                          static_cast<Real>(b), t));
+    return static_cast<Integer>(std::lerp(static_cast<Real>(a), static_cast<Real>(b), t));
 }
 /** Lerp between two colors */
 template<std::floating_point Real>
@@ -77,8 +76,7 @@ constexpr SDL_Rect next_subframe(SDL_Rect& guide, std::uint32_t k)
 }
 
 /** Draw a colored rect to a renderer */
-inline auto fill_rect(SDL_Renderer* renderer,
-                      const SDL_Rect& rect, const SDL_Color& color)
+inline void fill_rect(SDL_Renderer* renderer, const SDL_Rect& rect, const SDL_Color& color)
 {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, &rect);
@@ -92,29 +90,27 @@ inline auto fill_rect(SDL_Renderer* renderer,
  * As a side effect, the guide will be changed with every call
  * of the generator function
  */
-inline auto as_sequence(const fibonacci_spiral& spiral, SDL_Rect& guide)
+inline auto generate_sequence(const spiral_data& spiral, SDL_Rect& guide)
 {
     return [&](std::uint32_t k) {
         const auto t = divide<float>(k, spiral.num_frames);
-        const auto color = fib::lerp(spiral.initial_color,
-                                     spiral.final_color, t);
-
+        const auto color = fib::lerp(spiral.initial_color, spiral.final_color, t);
         return std::make_pair(next_subframe(guide, k), color);
     };
 }
 /** Draw the fibonacci spiral to the renderer */
-inline void draw_spiral(SDL_Renderer* renderer, const fibonacci_spiral& spiral)
+inline void draw_spiral(SDL_Renderer* renderer, const spiral_data& spiral)
 {
     namespace ranges = std::ranges;
     namespace views = std::views;
 
-    // the pattern will be draw to the entire screen
+    // the pattern will be drawn to the entire screen
     SDL_Rect render_frame{ 0, 0, 0, 0 };
     SDL_GetRendererOutputSize(renderer, &render_frame.w, &render_frame.h);
 
-    // render each subframe with a different color
+    // render each subframe with the next color on the gradient
     auto colored_rect_sequence = views::iota(0u, spiral.num_frames)
-                               | views::transform(as_sequence(spiral, render_frame));
+                               | views::transform(generate_sequence(spiral, render_frame));
     for (const auto& [rect, color] : colored_rect_sequence) {
         fill_rect(renderer, rect, color);
     }
