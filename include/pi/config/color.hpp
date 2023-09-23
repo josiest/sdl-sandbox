@@ -8,6 +8,7 @@
 #include <regex>
 #include <cstdio>
 
+#define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/node/convert.h>
 #include "pi/config/errors.hpp"
 #include "pi/meta/color.hpp"
@@ -27,7 +28,11 @@ bool parse_hex_rgb(std::string_view text, Integer& r, Integer& g, Integer& b)
     if (not std::regex_match(text.data(), match, hex_pattern)) {
         return false;
     }
-    std::sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);
+    int ir, ig, ib;
+    std::sscanf(match.str(1).c_str(), "%2x%2x%2x", &ir, &ig, &ib);
+    r = static_cast<Integer>(ir);
+    g = static_cast<Integer>(ig);
+    b = static_cast<Integer>(ib);
     return true;
 }
 
@@ -40,7 +45,12 @@ bool parse_hex_rgba(std::string_view text, Integer& r, Integer& g,
     if (not std::regex_match(text.data(), match, hex_pattern)) {
         return false;
     }
-    std::sscanf(match.str(1).c_str(), "%2x%2x%2x%2x", &r, &g, &b, &a);
+    int ir, ig, ib, ia;
+    std::sscanf(match.str(1).c_str(), "%2x%2x%2x%2x", &ir, &ig, &ib, &ia);
+    r = static_cast<Integer>(ir);
+    g = static_cast<Integer>(ig);
+    b = static_cast<Integer>(ib);
+    a = static_cast<Integer>(ia);
     return true;
 }
 
@@ -80,8 +90,7 @@ struct YAML::convert<SDL_Color> {
             msg::error(node, msg::not_hex_color);
             return false;
         }
-        if (parse_hex_rgba(node.Scalar(), color.r, color.g,
-                                          color.b, color.a)) {
+        if (parse_hex_rgba(node.Scalar(), color.r, color.g, color.b, color.a)) {
             return true;
         }
         if (parse_hex_rgb(node.Scalar(), color.r, color.g, color.b)) {

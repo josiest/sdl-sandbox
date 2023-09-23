@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdint>
 
+#define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/node/convert.h>
 #include <entt/meta/meta.hpp>
 
@@ -14,25 +15,22 @@ struct YAML::convert<entt::meta_any> {
     static bool decode(const YAML::Node& node, entt::meta_any& obj);
 };
 
-namespace pi::config {
+inline namespace pi {
+namespace config {
 
-inline YAML::Node encode_unsigned_integer(const entt::meta_any& number)
+inline YAML::Node encode_unsigned_integer(const entt::meta_any & number)
 {
     const auto type = number.type();
-    if (type.size_of() == sizeof(std::uint8_t))
-    {
+    if (type.size_of() == sizeof(std::uint8_t)) {
         return YAML::Node{ number.cast<std::uint8_t>() };
     }
-    else if (type.size_of() == sizeof(std::uint16_t))
-    {
+    else if (type.size_of() == sizeof(std::uint16_t)) {
         return YAML::Node{ number.cast<std::uint16_t>() };
     }
-    else if (type.size_of() == sizeof(std::uint32_t))
-    {
+    else if (type.size_of() == sizeof(std::uint32_t)) {
         return YAML::Node{ number.cast<std::uint32_t>() };
     }
-    else if (type.size_of() == sizeof(std::uint64_t))
-    {
+    else if (type.size_of() == sizeof(std::uint64_t)) {
         return YAML::Node{ number.cast<std::uint64_t>() };
     }
     // TODO: add more info to message
@@ -40,7 +38,7 @@ inline YAML::Node encode_unsigned_integer(const entt::meta_any& number)
     return YAML::Node{};
 }
 
-inline YAML::Node encode_integer(const entt::meta_any& obj)
+inline YAML::Node encode_integer(const entt::meta_any & obj)
 {
     // TODO: encode signed int
     if (not obj.type().is_signed()) {
@@ -50,11 +48,11 @@ inline YAML::Node encode_integer(const entt::meta_any& obj)
     return YAML::Node{};
 }
 
-inline YAML::Node encode_class(const entt::meta_any& obj)
+inline YAML::Node encode_class(const entt::meta_any & obj)
 {
     using namespace entt::literals;
     if (auto encoded = obj.invoke("yaml-encode"_hs, obj)) {
-        if (auto* node = encoded.try_cast<YAML::Node>()) {
+        if (auto * node = encoded.try_cast<YAML::Node>()) {
             return *node;
         }
         else {
@@ -70,33 +68,30 @@ inline YAML::Node encode_class(const entt::meta_any& obj)
 
 template<typename Number>
 requires std::is_arithmetic_v<Number>
-inline bool decode_number_as(const YAML::Node& number, entt::meta_any& obj)
+inline bool decode_number_as(const YAML::Node & number, entt::meta_any & obj)
 {
     Number val;
     if (YAML::convert<Number>::decode(number, val)) {
-        obj = val; return true;
+        obj = val;
+        return true;
     }
     return false;
 }
 
-inline bool decode_unsigned_integer(const YAML::Node& number,
-                                    entt::meta_any& obj)
+inline bool decode_unsigned_integer(const YAML::Node & number,
+                                    entt::meta_any & obj)
 {
     const auto type = obj.type();
-    if (type.size_of() == sizeof(std::uint8_t))
-    {
+    if (type.size_of() == sizeof(std::uint8_t)) {
         return decode_number_as<std::uint8_t>(number, obj);
     }
-    else if (type.size_of() == sizeof(std::uint16_t))
-    {
+    else if (type.size_of() == sizeof(std::uint16_t)) {
         return decode_number_as<std::uint16_t>(number, obj);
     }
-    else if (type.size_of() == sizeof(std::uint32_t))
-    {
+    else if (type.size_of() == sizeof(std::uint32_t)) {
         return decode_number_as<std::uint32_t>(number, obj);
     }
-    else if (type.size_of() == sizeof(std::uint64_t))
-    {
+    else if (type.size_of() == sizeof(std::uint64_t)) {
         return decode_number_as<std::uint64_t>(number, obj);
     }
     // TODO: include more info in this message
@@ -104,7 +99,7 @@ inline bool decode_unsigned_integer(const YAML::Node& number,
     return false;
 }
 
-inline bool decode_integer(const YAML::Node& node, entt::meta_any& obj)
+inline bool decode_integer(const YAML::Node & node, entt::meta_any & obj)
 {
     // TODO: decode signed integer
     if (not obj.type().is_signed()) {
@@ -114,9 +109,9 @@ inline bool decode_integer(const YAML::Node& node, entt::meta_any& obj)
     return false;
 }
 
-inline bool decode_with_function(const YAML::Node& node,
-                                 const entt::meta_func& decode_fn,
-                                 entt::meta_any& obj)
+inline bool decode_with_function(const YAML::Node & node,
+                                 const entt::meta_func & decode_fn,
+                                 entt::meta_any & obj)
 {
     if (not decode_fn.is_static()) {
         // TODO: add more to message
@@ -129,7 +124,7 @@ inline bool decode_with_function(const YAML::Node& node,
         return false;
     }
     const auto node_arg = decode_fn.arg(0);
-    if (node_arg != entt::resolve<const YAML::Node&>()) {
+    if (node_arg != entt::resolve<const YAML::Node &>()) {
         // TODO: add more to message
         std::printf("first argument of yaml-decode is not node!\n");
         return false;
@@ -146,7 +141,7 @@ inline bool decode_with_function(const YAML::Node& node,
         std::printf("return type of yaml-decode is not bool!\n");
         return false;
     }
-    std::array args{ entt::meta_any{node}, obj.as_ref() };
+    std::array args{ entt::meta_any{ node }, obj.as_ref() };
     auto decoded = decode_fn.invoke(obj, args.data(), args.size());
     if (const bool succeeded = decoded.cast<bool>()) {
         return succeeded;
@@ -158,7 +153,7 @@ inline bool decode_with_function(const YAML::Node& node,
     }
 }
 
-inline bool decode_class(const YAML::Node& node, entt::meta_any& obj)
+inline bool decode_class(const YAML::Node & node, entt::meta_any & obj)
 {
     using namespace entt::literals;
     if (auto decode_fn = obj.type().func("yaml-decode"_hs)) {
@@ -169,7 +164,7 @@ inline bool decode_class(const YAML::Node& node, entt::meta_any& obj)
     return false;
 }
 
-inline bool decode_scalar(const YAML::Node& node, entt::meta_any& obj)
+inline bool decode_scalar(const YAML::Node & node, entt::meta_any & obj)
 {
     const auto type = obj.type();
     if (type.is_integral()) {
@@ -185,13 +180,13 @@ inline bool decode_scalar(const YAML::Node& node, entt::meta_any& obj)
     return false;
 }
 
-inline bool decode_map(const YAML::Node& node, entt::meta_any& obj)
+inline bool decode_map(const YAML::Node & node, entt::meta_any & obj)
 {
     if (not node or not node.IsMap()) { return false; }
     bool success = true;
     // TODO: forward declare decode functions
     using as_any = YAML::convert<entt::meta_any>;
-    for (const auto& elem : node) {
+    for (const auto & elem : node) {
         const std::string prop_name = elem.first.Scalar();
         const auto prop_id = entt::hashed_string{ prop_name.c_str() };
         auto prop = obj.get(prop_id);
@@ -207,18 +202,19 @@ inline bool decode_map(const YAML::Node& node, entt::meta_any& obj)
 }
 
 template<typename T>
-bool decode(const YAML::Node& node, T& val)
+bool decode(const YAML::Node & node, T & val)
 {
     using as_any = YAML::convert<entt::meta_any>;
     pi::reflect<T>();
 
-    entt::meta_any any_val{ std::in_place_type<T&>, val };
+    entt::meta_any any_val{ std::in_place_type<T &>, val };
     const auto type_name = any_val.type().info().name();
     if (as_any::decode(node, any_val)) {
         val = any_val.cast<T>();
         return true;
     }
     return false;
+}
 }
 }
 

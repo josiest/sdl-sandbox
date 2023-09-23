@@ -75,13 +75,11 @@ constexpr SDL_Rect next_subframe(SDL_Rect& guide, std::uint32_t k)
     }
     return rect;
 }
-/** A rect and the color it should be drawn with */
-using colored_rect = std::pair<SDL_Rect, SDL_Color>;
 
 /** Draw a colored rect to a renderer */
-inline auto draw_rect(SDL_Renderer* renderer, const colored_rect& frame)
+inline auto fill_rect(SDL_Renderer* renderer,
+                      const SDL_Rect& rect, const SDL_Color& color)
 {
-    const auto& [rect, color] = frame;
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, &rect);
 }
@@ -112,12 +110,13 @@ inline void draw_spiral(SDL_Renderer* renderer, const fibonacci_spiral& spiral)
 
     // the pattern will be draw to the entire screen
     SDL_Rect render_frame{ 0, 0, 0, 0 };
-    SDL_GetRendererOutputSize(renderer, &render_frame.w,
-                                        &render_frame.h);
+    SDL_GetRendererOutputSize(renderer, &render_frame.w, &render_frame.h);
 
     // render each subframe with a different color
-    ranges::for_each(views::iota(0u, spiral.num_frames)
-                        | views::transform(as_sequence(spiral, render_frame)),
-                     std::bind_front(&draw_rect, renderer));
+    auto colored_rect_sequence = views::iota(0u, spiral.num_frames)
+                               | views::transform(as_sequence(spiral, render_frame));
+    for (const auto& [rect, color] : colored_rect_sequence) {
+        fill_rect(renderer, rect, color);
+    }
 }
 }

@@ -9,7 +9,6 @@
 #include <entt/meta/meta.hpp>
 
 #include <SDL2/SDL_pixels.h>
-#include <yaml-cpp/yaml.h>
 
 #include "pi/meta/reflect.hpp"
 #include "pi/meta/color.hpp"

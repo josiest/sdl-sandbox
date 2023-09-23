@@ -4,13 +4,12 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_events.h>
 
-#define YAML_CPP_STATIC_DEFINE
 #include "pi/config/paths.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"
 #include "fibonacci_spiral.hpp"
 
-int main(int argc, char * argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 {
     pi::system_graph systems;
     if (const auto system_config = pi::load_config("system.yaml")) {
