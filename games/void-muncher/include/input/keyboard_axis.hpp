@@ -21,9 +21,9 @@ public:
         sink.on_keydown().disconnect<&keyboard_axis::on_keydown>(*this);
         sink.on_keyup().disconnect<&keyboard_axis::on_keyup>(*this);
     }
-    void tick() const
+    void tick(float delta_time) const
     {
-        tick_signal.publish(axis);
+        tick_signal.publish(axis, delta_time);
     }
     auto on_tick()
     {
@@ -67,6 +67,6 @@ private:
         }
     }
     axis2d axis;
-    entt::sigh<void(const axis2d&)> tick_signal;
+    entt::sigh<void(const axis2d&, float)> tick_signal;
 };
 }

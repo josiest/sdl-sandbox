@@ -56,10 +56,10 @@ public:
     {
         axis.on_tick().connect<&muncher::move>(*this);
     }
-    void move(const pi::axis2d& axis)
+    void move(const pi::axis2d& axis, float delta_time)
     {
-        bbox.x += config.speed * static_cast<float>(axis.first);
-        bbox.y += config.speed * static_cast<float>(axis.second);
+        bbox.x += delta_time * config.speed * static_cast<float>(axis.first);
+        bbox.y += delta_time * config.speed * static_cast<float>(axis.second);
     }
     void reset(SDL_Renderer* renderer)
     {

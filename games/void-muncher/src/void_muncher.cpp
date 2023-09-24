@@ -70,16 +70,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     player.connect_to(axis);
     player.reset(renderer);
 
+    std::uint32_t ticks = SDL_GetTicks();
     while (not input.has_quit) {
+        const std::uint32_t current_ticks = SDL_GetTicks();
+        const float delta_time = static_cast<float>(current_ticks-ticks)/100.f;
+        ticks = current_ticks;
+
         events.poll();
-        axis.tick();
+        axis.tick(delta_time);
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
 
         draw(renderer, player);
         SDL_RenderPresent(renderer);
-
     }
     return EXIT_SUCCESS;
 }
