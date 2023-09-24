@@ -11,4 +11,7 @@ target_include_directories(void-muncher PRIVATE ../../include include)
 find_package(yaml-cpp REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(EnTT REQUIRED)
-target_link_libraries(void-muncher PRIVATE SDL2 EnTT::EnTT yaml-cpp)
+target_link_libraries(void-muncher PRIVATE
+        # mingw needs extra linkage for sdl
+        $<$<BOOL:MINGW>:mingw32 SDL2main>
+        SDL2 EnTT::EnTT yaml-cpp)

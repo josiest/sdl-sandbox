@@ -1,10 +1,12 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_events.h>
+#include <format>
+#include <filesystem>
 
-#include "pi/config/paths.hpp"
+#include <SDL2/SDL_render.h>
+
+#include "pi/config/assets.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"
 
@@ -12,23 +14,31 @@
 #include "input/keyboard_axis.hpp"
 #include "muncher.hpp"
 
+namespace fs = std::filesystem;
+
+namespace munch {
+const fs::path resource_dir{ "resources" };
+
+inline fs::path resource_path(std::string_view asset_name)
+{
+    return resource_dir/std::format("{}.yaml", asset_name);
+}
+}
+
 struct quit_handler {
     void connect_to(pi::event_sink& sink)
     {
         sink.on_quit().connect<&quit_handler::on_quit>(*this);
     }
-    void disconnect_from(pi::event_sink& sink)
-    {
-        sink.on_quit().disconnect<&quit_handler::on_quit>(*this);
-    }
     void on_quit() { has_quit = true; }
     bool has_quit = false;
 };
 
-int main()
+int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 {
     pi::system_graph systems;
-    if (const auto system_config = pi::load_config("system.yaml")) {
+    const auto system_path = munch::resource_path("system").string();
+    if (const auto system_config = pi::load_yaml_resource(system_path)) {
         systems.load<pi::renderer_system>(*system_config);
     }
     else {
