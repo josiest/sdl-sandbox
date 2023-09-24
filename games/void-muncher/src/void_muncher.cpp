@@ -16,7 +16,7 @@
 
 namespace fs = std::filesystem;
 
-namespace munch {
+inline namespace munch {
 const fs::path resource_dir{ "resources" };
 
 inline fs::path resource_path(std::string_view asset_name)
@@ -64,7 +64,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     pi::keyboard_axis axis;
     axis.connect_to(events);
 
-    muncher player;
+    const auto muncher_path = munch::resource_path("muncher").string();
+    const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
+    munch::muncher player{ muncher_config };
     player.connect_to(axis);
     player.reset(renderer);
 

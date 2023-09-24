@@ -75,19 +75,6 @@ inline YAML::Node encode_class(const entt::meta_any & obj)
     return YAML::Node{};
 }
 
-// TODO: replace with decode_yaml
-template<typename Number>
-requires std::is_arithmetic_v<Number>
-inline bool decode_number_as(const YAML::Node & number, entt::meta_any & obj)
-{
-    Number val;
-    if (YAML::convert<Number>::decode(number, val)) {
-        obj = val;
-        return true;
-    }
-    return false;
-}
-
 template<yaml_decodable ValueType>
 inline bool decode_yaml(const YAML::Node & node, entt::meta_any & obj)
 {
@@ -99,21 +86,41 @@ inline bool decode_yaml(const YAML::Node & node, entt::meta_any & obj)
     return false;
 }
 
+inline bool decode_float(const YAML::Node& number, entt::meta_any& obj)
+{
+    const auto type = obj.type();
+    if (type.size_of() == sizeof(float))
+    {
+        return decode_yaml<float>(number, obj);
+    }
+    if (type.size_of() == sizeof(double))
+    {
+        return decode_yaml<double>(number, obj);
+    }
+    if (type.size_of() == sizeof(long double))
+    {
+        return decode_yaml<long double>(number, obj);
+    }
+    // TODO: include more info in this message
+    std::printf("couldn't decode floating point number of unknown size\n");
+    return false;
+}
+
 inline bool decode_unsigned_integer(const YAML::Node & number,
                                     entt::meta_any & obj)
 {
     const auto type = obj.type();
     if (type.size_of() == sizeof(std::uint8_t)) {
-        return decode_number_as<std::uint8_t>(number, obj);
+        return decode_yaml<std::uint8_t>(number, obj);
     }
     else if (type.size_of() == sizeof(std::uint16_t)) {
-        return decode_number_as<std::uint16_t>(number, obj);
+        return decode_yaml<std::uint16_t>(number, obj);
     }
     else if (type.size_of() == sizeof(std::uint32_t)) {
-        return decode_number_as<std::uint32_t>(number, obj);
+        return decode_yaml<std::uint32_t>(number, obj);
     }
     else if (type.size_of() == sizeof(std::uint64_t)) {
-        return decode_number_as<std::uint64_t>(number, obj);
+        return decode_yaml<std::uint64_t>(number, obj);
     }
     // TODO: include more info in this message
     std::printf("couldn't decode unsigned integer of unknown size\n");
@@ -195,7 +202,10 @@ inline bool decode_scalar(const YAML::Node & node, entt::meta_any & obj)
     if (type.is_integral()) {
         return decode_integer(node, obj);
     }
-    // TODO: decode floating point
+    if (type.is_arithmetic())
+    {
+        return decode_float(node, obj);
+    }
     // TODO: decode other types
     if (type.is_class()) {
         return decode_class(node, obj);
