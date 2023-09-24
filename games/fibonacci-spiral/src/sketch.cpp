@@ -1,20 +1,45 @@
 #include <cstdio>
+#include <string_view>
+#include <format>
+#include <filesystem>
 
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_events.h>
 
-#include "pi/config/paths.hpp"
+#include "pi/config/assets.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"
 
 #include "gameplay_settings.hpp"
 #include "fibonacci_spiral.hpp"
 
+namespace fs = std::filesystem;
+namespace fib {
+const fs::path resource_dir{ "resources" };
+const fs::path asset_dir = resource_dir/"spirals";
+
+std::string asset_filename(std::string_view asset_name)
+{
+    return std::format("{}.yaml", asset_name);
+}
+
+fs::path config_path(std::string_view config_name)
+{
+    return fib::resource_dir/asset_filename(config_name);
+}
+
+fs::path asset_path(std::string_view asset_name)
+{
+    return fib::asset_dir/asset_filename(asset_name);
+}
+}
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 {
     pi::system_graph systems;
-    if (const auto system_config = pi::load_config("system.yaml")) {
+    const auto system_path = fib::config_path("system").string();
+    if (const auto system_config = pi::load_yaml_resource(system_path)) {
         systems.load<pi::renderer_system>(*system_config);
     }
     else {
@@ -29,8 +54,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     }
 
     SDL_Renderer* renderer = renderer_system->renderer();
-    const fib::gameplay_settings settings = fib::load_settings("fibonacci.yaml");
-    const fib::spiral_data spiral = fib::load_spiral(settings.spiral);
+    const auto settings_path = fib::config_path("fibonacci").string();
+    const auto settings = pi::load_asset<fib::gameplay_settings>(settings_path);
+
+    const auto spiral_path = fib::asset_path(settings.spiral).string();
+    const auto spiral = pi::load_asset<fib::spiral_data>(spiral_path);
 
     bool has_quit = false;
     while (not has_quit) {

@@ -8,4 +8,9 @@ auto reflect()
 {
     return entt::meta<T>();
 }
+
+template<typename T>
+concept reflectable = requires {
+    { reflect<T>() } -> std::same_as<entt::meta_factory<T>>;
+};
 }

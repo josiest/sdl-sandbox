@@ -8,6 +8,7 @@
 #include <entt/meta/meta.hpp>
 
 #include "pi/meta/reflect.hpp"
+#include "pi/config/errors.hpp"
 
 template<>
 struct YAML::convert<entt::meta_any> {
@@ -225,7 +226,7 @@ inline bool decode_map(const YAML::Node & node, entt::meta_any & obj)
     return false;
 }
 
-template<typename T>
+template<reflectable T>
 bool decode(const YAML::Node & node, T & val)
 {
     using as_any = YAML::convert<entt::meta_any>;
