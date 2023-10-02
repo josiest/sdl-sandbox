@@ -12,7 +12,8 @@
 
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard_axis.hpp"
-#include "muncher.hpp"
+#include "player/muncher.hpp"
+#include "visuals/colored_square.hpp"
 
 namespace fs = std::filesystem;
 
@@ -64,11 +65,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     pi::keyboard_axis axis;
     axis.connect_to(events);
 
+    auto entities = std::make_shared<entt::registry>();
+
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
-    munch::muncher player{ muncher_config };
+    auto player = munch::player_controller::create(entities, muncher_config);
     player.connect_to(axis);
-    player.reset(renderer);
 
     std::uint32_t ticks = SDL_GetTicks();
     while (not input.has_quit) {
@@ -77,12 +79,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         ticks = current_ticks;
 
         events.poll();
-        axis.tick(delta_time);
+        munch::move_constant_movers(*entities, delta_time);
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
 
-        draw(renderer, player);
+        munch::draw_all_colored_squares(*entities, renderer);
         SDL_RenderPresent(renderer);
     }
     return EXIT_SUCCESS;

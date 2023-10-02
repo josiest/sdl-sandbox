@@ -6,20 +6,15 @@
 #include <entt/signal/sigh.hpp>
 
 #include "pi/events/event_sink.hpp"
+#include "input/axis2d.hpp"
 
 inline namespace pi {
-using axis2d = std::pair<std::int8_t, std::int8_t>;
 class keyboard_axis {
 public:
     void connect_to(pi::event_sink& sink)
     {
         sink.on_keydown().connect<&keyboard_axis::on_keydown>(*this);
         sink.on_keyup().connect<&keyboard_axis::on_keyup>(*this);
-    }
-    void disconnect_from(pi::event_sink& sink)
-    {
-        sink.on_keydown().disconnect<&keyboard_axis::on_keydown>(*this);
-        sink.on_keyup().disconnect<&keyboard_axis::on_keyup>(*this);
     }
     void tick(float delta_time) const
     {
@@ -29,6 +24,12 @@ public:
     {
         return entt::sink{ tick_signal };
     }
+
+    auto on_axis_changed()
+    {
+        return entt::sink{ axis_changed_signal };
+    }
+
     SDL_Keycode up = SDLK_w;
     SDL_Keycode left = SDLK_a;
     SDL_Keycode down = SDLK_s;
@@ -38,35 +39,40 @@ private:
     {
         const auto key = keydown.keysym.sym;
         if (key == up) {
-            axis.second = -1;
+            axis.y = -1;
         }
         else if (key == left) {
-            axis.first = -1;
+            axis.x = -1;
         }
         else if (key == down) {
-            axis.second = 1;
+            axis.y = 1;
         }
         else if (key == right) {
-            axis.first = 1;
+            axis.x = 1;
         }
+        axis_changed_signal.publish(axis);
     }
     void on_keyup(const SDL_KeyboardEvent& keydown)
     {
         const auto key = keydown.keysym.sym;
-        if (key == up and axis.second < 0) {
-            axis.second = 0;
+        if (key == up and axis.y < 0) {
+            axis.y = 0;
         }
-        else if (key == left and axis.first < 0) {
-            axis.first = 0;
+        else if (key == left and axis.x < 0) {
+            axis.x = 0;
         }
-        else if (key == down and axis.second > 0) {
-            axis.second = 0;
+        else if (key == down and axis.y > 0) {
+            axis.y = 0;
         }
-        else if (key == right and axis.first > 0) {
-            axis.first = 0;
+        else if (key == right and axis.x > 0) {
+            axis.x = 0;
         }
+        axis_changed_signal.publish(axis);
     }
-    axis2d axis;
-    entt::sigh<void(const axis2d&, float)> tick_signal;
+    axis2d8_t axis{ 0, 0 };
+    axis2d8_tick_signal tick_signal;
+
+    using axis_sigh = entt::sigh<void(const axis2d8_t& axis)>;
+    axis_sigh axis_changed_signal;
 };
 }

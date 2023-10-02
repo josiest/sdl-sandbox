@@ -9,10 +9,11 @@ set_target_properties(sketch PROPERTIES
 target_include_directories(sketch PRIVATE ../../include include)
 
 find_package(yaml-cpp REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
 find_package(EnTT REQUIRED)
 
 target_link_libraries(sketch PRIVATE
         # mingw needs some extra linkage in order to work properly
-        $<$<BOOL:MINGW>:mingw32 SDL2main>
-        SDL2 EnTT::EnTT yaml-cpp)
+        $<$<BOOL:WIN32>:SDL2::SDL2main>
+        SDL2::SDL2 EnTT::EnTT yaml-cpp)
