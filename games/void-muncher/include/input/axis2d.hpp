@@ -22,9 +22,5 @@ struct axis2d {
     }
 };
 
-template<typename Field> requires std::is_arithmetic_v<Field>
-using axis2d_tick_signal = entt::sigh<void(const axis2d<Field>&, float)>;
-
 using axis2d8_t = axis2d<std::int8_t>;
-using axis2d8_tick_signal = axis2d_tick_signal<std::int8_t>;
 }

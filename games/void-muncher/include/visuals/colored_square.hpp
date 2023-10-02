@@ -10,7 +10,7 @@
 
 #include "pi/algorithm/primitives.hpp"
 #include "mechanics/components.hpp"
-#include "mechanics/math.hpp"
+#include "math/arithmetic.hpp"
 
 inline namespace munch {
 
@@ -50,8 +50,7 @@ draw_all_colored_squares(const entt::registry& entities, SDL_Renderer* renderer)
     squares.each([=](const com::position& pos, const com::color& color,
                      const com::size& size){
         const SDL_FPoint position{
-            origin_to_pixels.x + pos.value.x,
-            origin_to_pixels.y + pos.value.y,
+            origin_to_pixels.x + pos.value.x, origin_to_pixels.y + pos.value.y,
         };
         draw_colored_square(renderer, position, color.value, size.value);
     });

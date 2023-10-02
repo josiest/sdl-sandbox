@@ -12,8 +12,8 @@
 
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard_axis.hpp"
-#include "player/muncher.hpp"
 #include "visuals/colored_square.hpp"
+#include "mechanics/player_controller.hpp"
 
 namespace fs = std::filesystem;
 

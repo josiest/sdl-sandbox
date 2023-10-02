@@ -4,7 +4,7 @@
 inline namespace pi {
 
 template<typename T>
-auto reflect()
+[[maybe_unused]] auto reflect()
 {
     return entt::meta<T>();
 }

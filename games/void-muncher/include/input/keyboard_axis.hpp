@@ -16,14 +16,6 @@ public:
         sink.on_keydown().connect<&keyboard_axis::on_keydown>(*this);
         sink.on_keyup().connect<&keyboard_axis::on_keyup>(*this);
     }
-    void tick(float delta_time) const
-    {
-        tick_signal.publish(axis, delta_time);
-    }
-    auto on_tick()
-    {
-        return entt::sink{ tick_signal };
-    }
 
     auto on_axis_changed()
     {
@@ -70,7 +62,6 @@ private:
         axis_changed_signal.publish(axis);
     }
     axis2d8_t axis{ 0, 0 };
-    axis2d8_tick_signal tick_signal;
 
     using axis_sigh = entt::sigh<void(const axis2d8_t& axis)>;
     axis_sigh axis_changed_signal;

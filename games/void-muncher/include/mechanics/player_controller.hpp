@@ -27,7 +27,7 @@ struct muncher_data {
 
 inline namespace pi {
 template<>
-auto reflect<muncher_data>()
+[[maybe_unused]] auto reflect<muncher_data>()
 {
     using namespace entt::literals;
     YAML::convert<SDL_Color>::reflect();
@@ -80,8 +80,9 @@ public:
     }
 
     std::weak_ptr<entt::registry> entity_context;
-    entt::entity id;
-
+    entt::entity id{ 0 };
+private:
+    player_controller() = default;
 };
 
 }
