@@ -5,12 +5,15 @@
 inline namespace munch {
 
 struct world_system {
-    entt::registry entities;
-
     inline static world_system*
     load(pi::system_graph& systems)
     {
-        return &systems.emplace<world_system>();
+        auto& world = systems.emplace<world_system>();
+        world.registry = std::make_shared<entt::registry>();
+        return &world;
     }
+
+    entt::registry & entities() { return *registry; }
+    std::shared_ptr<entt::registry> registry;
 };
 }

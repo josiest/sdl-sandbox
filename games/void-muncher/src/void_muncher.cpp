@@ -14,6 +14,7 @@
 #include "input/keyboard_axis.hpp"
 #include "visuals/colored_square.hpp"
 #include "mechanics/player_controller.hpp"
+#include "game/world_system.hpp"
 
 namespace fs = std::filesystem;
 
@@ -48,6 +49,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
                     system_config.error().c_str());
         systems.load<pi::renderer_system>();
     }
+    auto& world = *systems.load<munch::world_system>();
+
     SDL_Renderer* renderer;
     if (auto* renderer_system = systems.find<pi::renderer_system>()) {
         renderer = renderer_system->renderer();
@@ -65,17 +68,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     pi::keyboard_axis axis;
     axis.connect_to(events);
 
-    auto entities = std::make_shared<entt::registry>();
-
-    const auto munchable = entities->create();
-    entities->emplace<munch::component::constant_mover>(munchable, 10.f, SDL_FPoint{ 1.f, 0.f });
-    entities->emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
-    entities->emplace<munch::component::size>(munchable, 20.f);
-    entities->emplace<munch::component::position>(munchable, SDL_FPoint{ 0.f, 50.f });
+    auto& entities = world.entities();
+    const auto munchable = entities.create();
+    entities.emplace<munch::component::constant_mover>(munchable, 10.f, SDL_FPoint{ 1.f, 0.f });
+    entities.emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
+    entities.emplace<munch::component::size>(munchable, 20.f);
+    entities.emplace<munch::component::position>(munchable, SDL_FPoint{ 0.f, 50.f });
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
-    auto player = munch::player_controller::create(entities, muncher_config);
+    auto player = munch::player_controller::create(world.registry, muncher_config);
     player.connect_to(axis);
 
     std::uint32_t ticks = SDL_GetTicks();
@@ -85,12 +87,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         ticks = current_ticks;
 
         events.poll();
-        munch::move_constant_movers(*entities, delta_time);
+        munch::move_constant_movers(entities, delta_time);
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
 
-        munch::draw_all_colored_squares(*entities, renderer);
+        munch::draw_all_colored_squares(entities, renderer);
         SDL_RenderPresent(renderer);
     }
     return EXIT_SUCCESS;
