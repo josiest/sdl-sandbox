@@ -67,6 +67,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
     auto entities = std::make_shared<entt::registry>();
 
+    const auto munchable = entities->create();
+    entities->emplace<munch::component::constant_mover>(munchable);
+    entities->emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
+    entities->emplace<munch::component::size>(munchable, 20.f);
+    entities->emplace<munch::component::position>(munchable, SDL_FPoint{ 0.f, 50.f });
+
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
     auto player = munch::player_controller::create(entities, muncher_config);
