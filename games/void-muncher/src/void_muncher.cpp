@@ -9,11 +9,13 @@
 #include "pi/config/assets.hpp"
 #include "pi/systems/system_graph.hpp"
 #include "pi/systems/renderer_system.hpp"
+#include "visuals/colored_square.hpp"
 
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard_axis.hpp"
-#include "visuals/colored_square.hpp"
+
 #include "mechanics/player_controller.hpp"
+#include "game/munchable_system.hpp"
 #include "game/world_system.hpp"
 
 namespace fs = std::filesystem;
@@ -49,8 +51,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
                     system_config.error().c_str());
         systems.load<pi::renderer_system>();
     }
-    auto& world = *systems.load<munch::world_system>();
-
     SDL_Renderer* renderer;
     if (auto* renderer_system = systems.find<pi::renderer_system>()) {
         renderer = renderer_system->renderer();
@@ -59,6 +59,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         std::printf("Fatal error: unable to load fundamental systems\n");
         return EXIT_FAILURE;
     }
+    auto& world = *systems.load<munch::world_system>();
+    auto& munchables = *systems.load<munch::munchable_system>();
 
     pi::event_sink events;
 
@@ -68,19 +70,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     pi::keyboard_axis axis;
     axis.connect_to(events);
 
-    auto& entities = world.entities();
-    const auto munchable = entities.create();
-    entities.emplace<munch::component::constant_mover>(munchable, 10.f, SDL_FPoint{ 1.f, 0.f });
-    entities.emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
-    entities.emplace<munch::component::size>(munchable, 20.f);
-    entities.emplace<munch::component::position>(munchable, SDL_FPoint{ 0.f, 50.f });
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
     auto player = munch::player_controller::create(world.registry, muncher_config);
     player.connect_to(axis);
 
+    auto& entities = world.entities();
     std::uint32_t ticks = SDL_GetTicks();
+
+    munchables.begin();
     while (not input.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
         const float delta_time = static_cast<float>(current_ticks-ticks)/100.f;
