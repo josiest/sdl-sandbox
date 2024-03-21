@@ -79,7 +79,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
     world.init(renderer);
     munchables.init(world);
-    munchables.begin();
+    munchables.begin(world);
 
     auto& entities = world.entities();
 

@@ -26,9 +26,8 @@ struct munchable_system{
 
     inline static munchable_system* load(pi::system_graph & systems);
     inline void init(munch::world_system& world_context);
-    inline void begin() const;
+    inline void begin(munch::world_system& world_context) const;
 
-    std::weak_ptr<entt::registry> entity_context;
     SDL_FRect world_bounds{ 0, 0, 800, 600 };
 };
 }
@@ -39,7 +38,7 @@ munch::munchable_system* munch::munchable_system::load(pi::system_graph & system
     if (not world) {
         return nullptr;
     }
-    return &systems.emplace<munch::munchable_system>(world->registry);
+    return &systems.emplace<munch::munchable_system>();
 }
 
 void munch::munchable_system::init(munch::world_system & world)
@@ -50,34 +49,30 @@ void munch::munchable_system::init(munch::world_system & world)
     world_bounds.h =  static_cast<float>(world.bounds.y);
 }
 
-void munch::munchable_system::begin() const
+void munch::munchable_system::begin(munch::world_system & world) const
 {
-    auto entities = entity_context.lock();
-    if (not entities) {
-        return;
-    }
-    const auto munchable = entities->create();
-    entities->emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
-    entities->emplace<munch::component::size>(munchable, 20.f);
-
-    std::random_device seed{};
-    std::mt19937 rng{seed()};
+    auto& entities = world.entities();
+    const auto munchable = entities.create();
+    entities.emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
+    entities.emplace<munch::component::size>(munchable, 20.f);
 
     std::uniform_real_distribution<float> X{ world_bounds.x, world_bounds.x+world_bounds.w };
     std::uniform_real_distribution<float> Y{ world_bounds.y, world_bounds.y+world_bounds.h };
     std::uniform_int_distribution<int> coin_toss{false, true};
 
-    const bool is_on_wall = coin_toss(rng);
-    const bool is_negative = coin_toss(rng);
+    const bool is_on_wall = coin_toss(world.rng);
+    const bool is_negative = coin_toss(world.rng);
 
     const SDL_FPoint position{
-        not is_on_wall? X(rng) : (is_negative? world_bounds.x : world_bounds.x+world_bounds.w),
-            is_on_wall? Y(rng) : (is_negative? world_bounds.y : world_bounds.y+world_bounds.h)
+        not is_on_wall ? X(world.rng)
+                       : (is_negative? world_bounds.x : world_bounds.x+world_bounds.w),
+            is_on_wall ? Y(world.rng)
+                       : (is_negative? world_bounds.y : world_bounds.y+world_bounds.h)
     };
-    entities->emplace<munch::component::position>(munchable, position);
+    entities.emplace<munch::component::position>(munchable, position);
 
     const float mag = std::sqrt(position.x*position.x + position.y*position.y);
     const SDL_FPoint dir{ -position.x/mag, -position.y/mag };
 
-    entities->emplace<munch::component::constant_mover>(munchable, 100.f, dir);
+    entities.emplace<munch::component::constant_mover>(munchable, 100.f, dir);
 }
