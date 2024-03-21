@@ -59,8 +59,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         std::printf("Fatal error: unable to load fundamental systems\n");
         return EXIT_FAILURE;
     }
-    auto& world = *systems.load<munch::world_system>();
-    auto& munchables = *systems.load<munch::munchable_system>();
 
     pi::event_sink events;
 
@@ -71,15 +69,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     axis.connect_to(events);
 
 
+    auto& world = *systems.load<munch::world_system>();
+    auto& munchables = *systems.load<munch::munchable_system>();
+
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
     auto player = munch::player_controller::create(world.registry, muncher_config);
     player.connect_to(axis);
 
+    world.init(renderer);
+    munchables.init(world);
+    munchables.begin();
+
     auto& entities = world.entities();
     std::uint32_t ticks = SDL_GetTicks();
-
-    munchables.begin();
     while (not input.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
         const float delta_time = static_cast<float>(current_ticks-ticks)/100.f;
