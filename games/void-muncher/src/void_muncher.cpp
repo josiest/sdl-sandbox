@@ -90,16 +90,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     while (not input.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
         const std::uint32_t delta_ticks = current_ticks-ticks;
-        // we're updating too fast, wait a bit for the cpu
+        // cap the framerate to go easy on the cpu
         if (delta_ticks < min_ticks) {
             SDL_Delay(min_ticks - delta_ticks);
             continue;
         }
-        const float delta_time = static_cast<float>(current_ticks-ticks) * .001f;
         ticks = current_ticks;
 
         events.poll();
-        munch::move_constant_movers(entities, delta_time);
+        munch::update_constant_movers(entities, delta_ticks);
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
