@@ -19,7 +19,7 @@ rounded_bbox(const SDL_FPoint& pos, float size)
 {
     namespace ranges = std::ranges;
     SDL_Rect rounded;
-    auto round_to_int = [](float v) { return static_cast<int>(std::round(v)); };
+    auto round_to_int = [](float v) { return static_cast<int>(v); };
     SDL_FRect bbox{ pos.x, pos.y, size, size };
     ranges::transform(bbox, ranges::begin(rounded), round_to_int);
     return rounded;

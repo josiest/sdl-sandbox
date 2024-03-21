@@ -79,5 +79,5 @@ void munch::munchable_system::begin() const
     const float mag = std::sqrt(position.x*position.x + position.y*position.y);
     const SDL_FPoint dir{ -position.x/mag, -position.y/mag };
 
-    entities->emplace<munch::component::constant_mover>(munchable, 10.f, dir);
+    entities->emplace<munch::component::constant_mover>(munchable, 100.f, dir);
 }

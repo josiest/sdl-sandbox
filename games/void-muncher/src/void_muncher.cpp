@@ -82,10 +82,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     munchables.begin();
 
     auto& entities = world.entities();
+
     std::uint32_t ticks = SDL_GetTicks();
+    // (1000 ticks/sec) / (60 frames/sec) = x ticks/frame
+    static constexpr std::uint32_t min_ticks = 1000/60;
+
     while (not input.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
-        const float delta_time = static_cast<float>(current_ticks-ticks)/100.f;
+        const std::uint32_t delta_ticks = current_ticks-ticks;
+        // we're updating too fast, wait a bit for the cpu
+        if (delta_ticks < min_ticks) {
+            SDL_Delay(min_ticks - delta_ticks);
+            continue;
+        }
+        const float delta_time = static_cast<float>(current_ticks-ticks) * .001f;
         ticks = current_ticks;
 
         events.poll();
@@ -96,6 +106,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
         munch::draw_all_colored_squares(entities, renderer);
         SDL_RenderPresent(renderer);
+
     }
     return EXIT_SUCCESS;
 }
