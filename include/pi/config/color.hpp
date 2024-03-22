@@ -54,15 +54,15 @@ bool parse_hex_rgba(std::string_view text, Integer& r, Integer& g,
     return true;
 }
 
-std::string write_hex_rgb(std::uint8_t r, std::uint8_t g, std::uint8_t b)
+inline std::string write_hex_rgb(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
     static char buf[8];
     std::sprintf(buf, "0x%2x%2x%2x", r, g, b);
     return std::string{ buf };
 }
 
-std::string write_hex_rgba(std::uint8_t r, std::uint8_t g,
-                           std::uint8_t b, std::uint8_t a)
+inline std::string write_hex_rgba(std::uint8_t r, std::uint8_t g,
+                                  std::uint8_t b, std::uint8_t a)
 {
     static char buf[10];
     std::sprintf(buf, "0x%2x%2x%2x%2x", r, g, b, a);

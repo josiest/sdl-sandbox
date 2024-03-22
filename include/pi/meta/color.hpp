@@ -9,7 +9,7 @@
 
 inline namespace pi {
 template<>
-[[maybe_unused]] auto reflect<SDL_Color>()
+inline auto reflect<SDL_Color>()
 {
     using namespace entt::literals;
     return entt::meta<SDL_Color>()
