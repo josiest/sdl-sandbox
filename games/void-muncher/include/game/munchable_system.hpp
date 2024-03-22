@@ -41,6 +41,9 @@ struct munchable_system{
     // likelihood of spawning
     float spawn_chance = .65f;
 
+    // variance in target angle from spawn to center
+    float target_angle_variance = .5f;
+
     std::uint32_t ticks_since_spawn = std::numeric_limits<std::uint32_t>::max();
 };
 }
@@ -67,7 +70,7 @@ void munch::munchable_system::update(munch::world_system & world, std::uint32_t 
     if (ticks_since_spawn < std::numeric_limits<std::uint32_t>::max() - delta_ticks) {
         ticks_since_spawn += delta_ticks;
     }
-    // (1000 ticks/sec) / (x hz) = x ticks
+    // (1000 ticks/sec) / (x hz) = y ticks
     if (ticks_since_spawn <= 1000/spawn_frequency) {
         return;
     }
@@ -102,8 +105,19 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     };
     entities.emplace<munch::component::position>(munchable, position);
 
-    const float mag = std::sqrt(position.x*position.x + position.y*position.y);
-    const SDL_FPoint dir{ -position.x/mag, -position.y/mag };
+    constexpr float pi = std::numbers::pi_v<float>;
+    std::normal_distribution<float> angle_offset{ 0.f, std::sqrt(target_angle_variance) * pi/3 };
+
+    /** angle from center to the spawn position */
+    //      |v| sin(theta) = v.y; |v| cos(theta) = v.x
+    //      tan(theta) = sin(theta) / cos(theta) -> theta = atan(v.y/v.x)
+    const float theta = std::atan2(position.y, position.x);
+
+    /** angle from spawn position to center with variance */
+    //      add pi to reverse the angle
+    const float phi = theta + pi + angle_offset(world.rng);
+
+    const SDL_FPoint dir{ std::cos(phi), std::sin(phi) };
 
     entities.emplace<munch::component::constant_mover>(munchable, 100.f, dir);
 }
