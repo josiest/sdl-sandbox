@@ -78,8 +78,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     player.connect_to(axis);
 
     world.init(renderer);
-    munchables.init(world);
-
     auto& entities = world.entities;
 
     std::uint32_t ticks = SDL_GetTicks();

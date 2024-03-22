@@ -14,7 +14,7 @@ struct world_system {
 
     entt::registry entities;
     std::mt19937 rng;
-    SDL_Point bounds{ 800, 600 };
+    SDL_FRect bounds{ -400.f, -300.f, 800.f, 600.f };
 };
 }
 
@@ -30,5 +30,9 @@ munch::world_system* munch::world_system::load(pi::system_graph & systems)
 
 void munch::world_system::init(SDL_Renderer* renderer)
 {
-    SDL_GetRendererOutputSize(renderer, &bounds.x, &bounds.y);
+    int w, h;
+    SDL_GetRendererOutputSize(renderer, &w, &h);
+    const float width =  static_cast<float>(w);
+    const float height = static_cast<float>(h);
+    bounds = { -width/2.f, -height/2.f, width, height };
 }

@@ -29,12 +29,10 @@ struct munchable_system{
     }
 
     inline static munchable_system* load(pi::system_graph & systems);
-    inline void init(munch::world_system& world);
     inline void update(munch::world_system& world, std::uint32_t delta_ticks);
     inline void spawn(munch::world_system& world) const;
     inline void despawn_any_outside(munch::world_system& world) const;
 
-    SDL_FRect world_bounds{ 0, 0, 800, 600 };
     std::vector<SDL_Color> colors{{0xf3, 0x91, 0x89}, {0xbb, 0x80, 0x82},
                                   {0x6e, 0x75, 0x82}, {0x04, 0x65, 0x82}};
 
@@ -57,14 +55,6 @@ munch::munchable_system* munch::munchable_system::load(pi::system_graph & system
         return nullptr;
     }
     return &systems.emplace<munch::munchable_system>();
-}
-
-void munch::munchable_system::init(munch::world_system & world)
-{
-    world_bounds.x = -static_cast<float>(world.bounds.x)/2;
-    world_bounds.y = -static_cast<float>(world.bounds.y)/2;
-    world_bounds.w =  static_cast<float>(world.bounds.x);
-    world_bounds.h =  static_cast<float>(world.bounds.y);
 }
 
 void munch::munchable_system::update(munch::world_system & world, std::uint32_t delta_ticks)
@@ -96,8 +86,8 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     const SDL_Color color = colors[random_color(world.rng)];
     entities.emplace<com::color>(munchable, color.r, color.g, color.b);
 
-    std::uniform_real_distribution<float> X{ world_bounds.x, world_bounds.x+world_bounds.w };
-    std::uniform_real_distribution<float> Y{ world_bounds.y, world_bounds.y+world_bounds.h };
+    std::uniform_real_distribution<float> X{ world.bounds.x, world.bounds.x+world.bounds.w };
+    std::uniform_real_distribution<float> Y{ world.bounds.y, world.bounds.y+world.bounds.h };
     std::uniform_int_distribution<int> coin_toss{false, true};
 
     const bool is_on_wall = coin_toss(world.rng);
@@ -105,9 +95,9 @@ void munch::munchable_system::spawn(munch::world_system & world) const
 
     const auto& bbox = entities.emplace<com::bbox>(munchable,
         not is_on_wall ? X(world.rng)
-                       : (is_negative? world_bounds.x : world_bounds.x+world_bounds.w),
+                       : (is_negative? world.bounds.x : world.bounds.x+world.bounds.w),
             is_on_wall ? Y(world.rng)
-                       : (is_negative? world_bounds.y : world_bounds.y+world_bounds.h),
+                       : (is_negative? world.bounds.y : world.bounds.y+world.bounds.h),
         20.f
     );
 
@@ -133,7 +123,7 @@ void munch::munchable_system::despawn_any_outside(munch::world_system & world) c
     auto all_munchables = world.entities.view<com::munchable, com::bbox>();
     for (auto &&[entity, bbox] : all_munchables.each()) {
         const SDL_FRect b_rect = bbox;
-        if (not SDL_HasIntersectionF(&world_bounds, &b_rect)) {
+        if (not SDL_HasIntersectionF(&world.bounds, &b_rect)) {
             to_despawn.push_back(entity);
         }
     }
