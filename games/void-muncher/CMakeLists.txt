@@ -4,7 +4,8 @@ project(void-muncher)
 add_executable(void-muncher src/void_muncher.cpp
                             src/game/world_system.cpp src/game/munchable_system.cpp
                             src/input/keyboard_axis.cpp
-                            src/mechanics/player_controller.cpp src/mechanics/movement.cpp)
+                            src/mechanics/player_controller.cpp src/mechanics/movement.cpp
+                            src/visuals/colored_square.cpp)
 
 set_target_properties(void-muncher PROPERTIES
     CXX_STANDARD 23
