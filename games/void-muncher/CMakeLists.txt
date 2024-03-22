@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 project(void-muncher)
 
-add_executable(void-muncher src/void_muncher.cpp)
+add_executable(void-muncher
+        src/void_muncher.cpp
+
+        src/game/world_system.cpp src/game/munchable_system.cpp)
+
 set_target_properties(void-muncher PROPERTIES
     CXX_STANDARD 23
     CXX_STANDARD_REQUIRED TRUE)
