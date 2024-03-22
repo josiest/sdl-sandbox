@@ -74,13 +74,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
-    auto player = munch::player_controller::create(world.registry, muncher_config);
+    auto player = munch::player_controller::create(&world, muncher_config);
     player.connect_to(axis);
 
     world.init(renderer);
     munchables.init(world);
 
-    auto& entities = world.entities();
+    auto& entities = world.entities;
 
     std::uint32_t ticks = SDL_GetTicks();
     // (1000 ticks/sec) / (60 frames/sec) = x ticks/frame

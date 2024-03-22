@@ -84,7 +84,7 @@ void munch::munchable_system::update(munch::world_system & world, std::uint32_t 
 
 void munch::munchable_system::spawn(munch::world_system & world) const
 {
-    auto& entities = world.entities();
+    auto& entities = world.entities;
     const auto munchable = entities.create();
     entities.emplace<munch::component::munchable>(munchable);
     entities.emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
@@ -127,7 +127,7 @@ void munch::munchable_system::despawn_any_outside(munch::world_system & world) c
     namespace com = munch::component;
     std::vector<entt::entity> to_despawn;
 
-    auto all_munchables = world.entities().view<com::munchable, com::position, com::size>();
+    auto all_munchables = world.entities.view<com::munchable, com::position, com::size>();
     for (auto &&[entity, position, size] : all_munchables.each()) {
         const SDL_FRect bbox{ position.value.x, position.value.y,
                               size.value, size.value };
@@ -136,5 +136,5 @@ void munch::munchable_system::despawn_any_outside(munch::world_system & world) c
             to_despawn.push_back(entity);
         }
     }
-    world.entities().destroy(to_despawn.begin(), to_despawn.end());
+    world.entities.destroy(to_despawn.begin(), to_despawn.end());
 }

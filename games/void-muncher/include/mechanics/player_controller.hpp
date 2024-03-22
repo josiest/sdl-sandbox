@@ -16,6 +16,7 @@
 #include "input/keyboard_axis.hpp"
 #include "mechanics/components.hpp"
 #include "movement/constant_mover.hpp"
+#include "game/world_system.hpp"
 
 inline namespace munch {
 struct muncher_data {
@@ -44,20 +45,20 @@ inline namespace munch {
 class player_controller {
 public:
     static player_controller
-    create(const std::weak_ptr<entt::registry>& in_entities,
+    create(munch::world_system* world,
            const muncher_data& config)
     {
         player_controller player;
-        player.entity_context = in_entities;
+        player.world = world;
 
-        auto entities = player.entity_context.lock();
-        if (not entities) { return player; }
+        if (not world) { return player; }
+        auto& entities = world->entities;
 
-        player.id = entities->create();
-        entities->emplace<component::position>(player.id, SDL_FPoint{ 0.f, 0.f });
-        entities->emplace<component::size>(player.id, config.starting_size);
-        entities->emplace<component::color>(player.id, config.color);
-        entities->emplace<component::constant_mover>(
+        player.id = entities.create();
+        entities.emplace<component::position>(player.id, SDL_FPoint{ 0.f, 0.f });
+        entities.emplace<component::size>(player.id, config.starting_size);
+        entities.emplace<component::color>(player.id, config.color);
+        entities.emplace<component::constant_mover>(
             player.id, config.speed, SDL_FPoint{ 0.f, 0.f });
 
         return player;
@@ -71,15 +72,14 @@ public:
 
     inline void orient(const pi::axis2d8_t& axis) const
     {
-        if (auto entities = entity_context.lock();
-            entities and entities->valid(id))
+        if (world and world->entities.valid(id))
         {
-            auto& mover = entities->get<component::constant_mover>(id);
+            auto& mover = world->entities.get<component::constant_mover>(id);
             mover.direction = static_cast<SDL_FPoint>(axis);
         }
     }
 
-    std::weak_ptr<entt::registry> entity_context;
+    munch::world_system* world = nullptr;
     entt::entity id{ 0 };
 private:
     player_controller() = default;
