@@ -35,6 +35,8 @@ struct munchable_system{
     inline void despawn_any_outside(munch::world_system& world) const;
 
     SDL_FRect world_bounds{ 0, 0, 800, 600 };
+    std::vector<SDL_Color> colors{{0xf3, 0x91, 0x89}, {0xbb, 0x80, 0x82},
+                                  {0x6e, 0x75, 0x82}, {0x04, 0x65, 0x82}};
 
     // how many times to try to spawn per second
     float spawn_frequency = 3.5f;
@@ -89,7 +91,10 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     auto& entities = world.entities;
     const auto munchable = entities.create();
     entities.emplace<com::munchable>(munchable);
-    entities.emplace<com::color>(munchable, 235, 64, 52);
+
+    std::uniform_int_distribution<std::size_t> random_color{ 0ul, colors.size()-1 };
+    const SDL_Color color = colors[random_color(world.rng)];
+    entities.emplace<com::color>(munchable, color.r, color.g, color.b);
 
     std::uniform_real_distribution<float> X{ world_bounds.x, world_bounds.x+world_bounds.w };
     std::uniform_real_distribution<float> Y{ world_bounds.y, world_bounds.y+world_bounds.h };
