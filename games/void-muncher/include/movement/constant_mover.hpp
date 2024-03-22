@@ -4,28 +4,20 @@
 #include "mechanics/components.hpp"
 
 inline namespace munch {
-namespace component {
-struct constant_mover {
-    float speed = 10.f;
-    SDL_FPoint direction = { 0.f, 0.f };
-};
-}
 inline constexpr SDL_FPoint
-move(const component::constant_mover& mover,
-     const component::position& pos, float delta_ticks)
+move(const component::bbox& bbox, const component::velocity& velocity, float delta_ticks)
 {
-    const auto& [speed, direction] = mover;
-    const SDL_FPoint velocity{ direction.x * speed, direction.y * speed };
-    return SDL_FPoint { pos.value.x + (velocity.x * delta_ticks) * .001f,
-                        pos.value.y + (velocity.y * delta_ticks) * .001f };
+    return SDL_FPoint { bbox.x + (velocity.x * delta_ticks) * .001f,
+                        bbox.y + (velocity.y * delta_ticks) * .001f };
 }
 
-void update_constant_movers(entt::registry& entities, std::uint32_t delta_ticks)
+void update_positions(entt::registry& entities, std::uint32_t delta_ticks)
 {
-    namespace com = component;
-    auto movers = entities.view<com::position, com::constant_mover>();
-    movers.each([=](auto& pos, auto const & movement_params) {
-        pos.value = move(movement_params, pos, static_cast<float>(delta_ticks));
+    auto boxes = entities.view<component::bbox, component::velocity>();
+    boxes.each([=](auto& bbox, auto const & velocity) {
+        const auto moved_position = move(bbox, velocity, static_cast<float>(delta_ticks));
+        bbox.x = moved_position.x;
+        bbox.y = moved_position.y;
     });
 }
 }

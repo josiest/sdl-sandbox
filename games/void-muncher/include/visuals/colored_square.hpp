@@ -14,23 +14,10 @@
 
 inline namespace munch {
 
-inline SDL_Rect
-rounded_bbox(const SDL_FPoint& pos, float size)
-{
-    namespace ranges = std::ranges;
-    SDL_Rect rounded;
-    auto round_to_int = [](float v) { return static_cast<int>(v); };
-    SDL_FRect bbox{ pos.x, pos.y, size, size };
-    ranges::transform(bbox, ranges::begin(rounded), round_to_int);
-    return rounded;
-}
-
 inline void
-draw_colored_square(SDL_Renderer* renderer,
-                    const SDL_FPoint& pos, const SDL_Color& color, float size)
+draw_colored_square(SDL_Renderer* renderer, const SDL_Rect& bbox, const SDL_Color& color)
 {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    const SDL_Rect bbox = rounded_bbox(pos, size);
     SDL_RenderFillRect(renderer, &bbox);
 }
 
@@ -38,7 +25,7 @@ inline void
 draw_all_colored_squares(const entt::registry& entities, SDL_Renderer* renderer)
 {
     namespace com = component;
-    const auto squares = entities.view<com::position, com::color, com::size>();
+    const auto squares = entities.view<com::bbox, com::color>();
 
     int screen_width = 0;
     int screen_height = 0;
@@ -47,12 +34,12 @@ draw_all_colored_squares(const entt::registry& entities, SDL_Renderer* renderer)
         pi::divide_by(screen_width, 2.f), pi::divide_by(screen_height, 2.f)
     };
 
-    squares.each([=](const com::position& pos, const com::color& color,
-                     const com::size& size){
-        const SDL_FPoint position{
-            origin_to_pixels.x + pos.value.x, origin_to_pixels.y + pos.value.y,
-        };
-        draw_colored_square(renderer, position, color.value, size.value);
+    squares.each([=](const com::bbox& bbox, const com::color& color) {
+        com::bbox centered_box = bbox;
+        centered_box.x += origin_to_pixels.x;
+        centered_box.y += origin_to_pixels.y;
+
+        draw_colored_square(renderer, static_cast<SDL_Rect>(centered_box), color);
     });
 }
 }

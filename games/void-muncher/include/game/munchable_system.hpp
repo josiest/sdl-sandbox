@@ -84,11 +84,12 @@ void munch::munchable_system::update(munch::world_system & world, std::uint32_t 
 
 void munch::munchable_system::spawn(munch::world_system & world) const
 {
+    namespace com = munch::component;
+
     auto& entities = world.entities;
     const auto munchable = entities.create();
-    entities.emplace<munch::component::munchable>(munchable);
-    entities.emplace<munch::component::color>(munchable, SDL_Color{ 235, 64, 52 });
-    entities.emplace<munch::component::size>(munchable, 20.f);
+    entities.emplace<com::munchable>(munchable);
+    entities.emplace<com::color>(munchable, 235, 64, 52);
 
     std::uniform_real_distribution<float> X{ world_bounds.x, world_bounds.x+world_bounds.w };
     std::uniform_real_distribution<float> Y{ world_bounds.y, world_bounds.y+world_bounds.h };
@@ -97,13 +98,13 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     const bool is_on_wall = coin_toss(world.rng);
     const bool is_negative = coin_toss(world.rng);
 
-    const SDL_FPoint position{
+    const auto& bbox = entities.emplace<com::bbox>(munchable,
         not is_on_wall ? X(world.rng)
                        : (is_negative? world_bounds.x : world_bounds.x+world_bounds.w),
             is_on_wall ? Y(world.rng)
-                       : (is_negative? world_bounds.y : world_bounds.y+world_bounds.h)
-    };
-    entities.emplace<munch::component::position>(munchable, position);
+                       : (is_negative? world_bounds.y : world_bounds.y+world_bounds.h),
+        20.f
+    );
 
     constexpr float pi = std::numbers::pi_v<float>;
     std::normal_distribution<float> angle_offset{ 0.f, std::sqrt(target_angle_variance) * pi/3 };
@@ -111,15 +112,12 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     /** angle from center to the spawn position */
     //      |v| sin(theta) = v.y; |v| cos(theta) = v.x
     //      tan(theta) = sin(theta) / cos(theta) -> theta = atan(v.y/v.x)
-    const float theta = std::atan2(position.y, position.x);
+    const float theta = std::atan2(bbox.y, bbox.x);
 
     /** angle from spawn position to center with variance */
     //      add pi to reverse the angle
     const float phi = theta + pi + angle_offset(world.rng);
-
-    const SDL_FPoint dir{ std::cos(phi), std::sin(phi) };
-
-    entities.emplace<munch::component::constant_mover>(munchable, 100.f, dir);
+    entities.emplace<com::velocity>(munchable, 100.f*std::cos(phi), 100.f*std::sin(phi));
 }
 
 void munch::munchable_system::despawn_any_outside(munch::world_system & world) const
@@ -127,12 +125,10 @@ void munch::munchable_system::despawn_any_outside(munch::world_system & world) c
     namespace com = munch::component;
     std::vector<entt::entity> to_despawn;
 
-    auto all_munchables = world.entities.view<com::munchable, com::position, com::size>();
-    for (auto &&[entity, position, size] : all_munchables.each()) {
-        const SDL_FRect bbox{ position.value.x, position.value.y,
-                              size.value, size.value };
-
-        if (not SDL_HasIntersectionF(&world_bounds, &bbox)) {
+    auto all_munchables = world.entities.view<com::munchable, com::bbox>();
+    for (auto &&[entity, bbox] : all_munchables.each()) {
+        const SDL_FRect b_rect = bbox;
+        if (not SDL_HasIntersectionF(&world_bounds, &b_rect)) {
             to_despawn.push_back(entity);
         }
     }

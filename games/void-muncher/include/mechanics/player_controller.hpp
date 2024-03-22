@@ -22,8 +22,14 @@ inline namespace munch {
 struct muncher_data {
     SDL_Color color{ 0x0, 0x0, 0x0, 0xff };
     float starting_size = 20.f;
-    float speed = 10.f;
+    float speed = 200.f;
 };
+
+namespace component {
+struct dynamic_movement{
+    float max_speed = 100.f;
+};
+}
 }
 
 inline namespace pi {
@@ -55,11 +61,11 @@ public:
         auto& entities = world->entities;
 
         player.id = entities.create();
-        entities.emplace<component::position>(player.id, SDL_FPoint{ 0.f, 0.f });
-        entities.emplace<component::size>(player.id, config.starting_size);
-        entities.emplace<component::color>(player.id, config.color);
-        entities.emplace<component::constant_mover>(
-            player.id, config.speed, SDL_FPoint{ 0.f, 0.f });
+        entities.emplace<component::bbox>(player.id, 0.f, 0.f, config.starting_size);
+        entities.emplace<component::color>(player.id, config.color.r, config.color.g,
+                                                      config.color.b);
+        entities.emplace<component::velocity>(player.id, 0.f, 0.f);
+        entities.emplace<component::dynamic_movement>(player.id, config.speed);
 
         return player;
     }
@@ -74,8 +80,11 @@ public:
     {
         if (world and world->entities.valid(id))
         {
-            auto& mover = world->entities.get<component::constant_mover>(id);
-            mover.direction = static_cast<SDL_FPoint>(axis);
+            const auto movement = world->entities.get<component::dynamic_movement>(id);
+            auto& velocity = world->entities.get<component::velocity>(id);
+            const float norm = std::sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
+            velocity.x = axis.x * movement.max_speed/norm;
+            velocity.y = axis.y * movement.max_speed/norm;
         }
     }
 
