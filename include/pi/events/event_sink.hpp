@@ -4,25 +4,8 @@
 
 inline namespace pi {
 struct event_sink{
-    inline void poll()
-    {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                quit.publish();
-                break;
-            case SDL_KEYDOWN:
-                keydown.publish(event.key);
-                break;
-            case SDL_KEYUP:
-                keyup.publish(event.key);
-                break;
-            default:
-                break;
-            }
-        }
-    }
+    void poll();
+
     inline auto on_quit() { return entt::sink{ quit }; }
     inline auto on_keydown() { return entt::sink{ keydown }; }
     inline auto on_keyup() { return entt::sink{ keyup }; }

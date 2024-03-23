@@ -5,6 +5,11 @@ find_package(yaml-cpp REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(EnTT REQUIRED)
 
+add_library(pi::events STATIC IMPORTED)
+set_property(TARGET pi::events PROPERTY
+             IMPORTED_LOCATION
+             "${CMAKE_CURRENT_SOURCE_DIR}/../lib/pi/events/libpi-events.a")
+
 add_library(world-system STATIC src/game/world_system.cpp)
 target_include_directories(world-system PRIVATE include ../../include)
 target_link_libraries(world-system PRIVATE
@@ -47,4 +52,5 @@ target_link_libraries(void-muncher PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main>
         SDL2 EnTT::EnTT yaml-cpp
+        pi::events
         world-system keyboard-axis colored-squares basic-movement)
