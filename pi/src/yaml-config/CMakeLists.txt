@@ -21,18 +21,25 @@ target_link_libraries(pi-yaml-config PUBLIC # mingw needs extra linkage for sdl
 # Install the Library
 #
 
+# install the include files for pi-yaml-config
+install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/errors.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/paths.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/primitives.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/color.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/convert_flags.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
+
+install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/flags/init_flags.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/flags/window_flags.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/flags/renderer_flags.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config/flags)
+
 # install the compiled objects for pi-yaml-config
 install(TARGETS pi-yaml-config
         EXPORT pi-yaml-config-targets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/pi/yaml-config
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
 
-# install the include files for pi-yaml-config
-install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/errors.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/paths.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/primitives.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/color.hpp
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
 
 # create and install the target files
 install(EXPORT pi-yaml-config-targets
