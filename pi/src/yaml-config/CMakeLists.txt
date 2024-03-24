@@ -4,7 +4,7 @@
 #
 
 find_package(yaml-cpp REQUIRED)
-add_library(pi-yaml-config STATIC errors.cpp)
+add_library(pi-yaml-config STATIC errors.cpp paths.cpp)
 
 # specify include directories for pi-yaml-config
 target_include_directories(
@@ -29,6 +29,7 @@ install(TARGETS pi-yaml-config
 
 # install the include files for pi-yaml-config
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/errors.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/paths.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
 
 # create and install the target files
