@@ -7,13 +7,11 @@
 #include <memory>
 #include <cstdio>
 
-#include <entt/core/fwd.hpp>
+#include <SDL2/SDL_video.h>
 #include <entt/core/type_info.hpp>
 
 #include "pi/sdl-systems/init_system.hpp"
 #include "pi/sdl-systems/sdl_deleter.hpp"
-
-struct SDL_Window;
 
 namespace YAML {
 class Node;
