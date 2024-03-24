@@ -4,7 +4,7 @@
 #
 
 find_package(yaml-cpp REQUIRED)
-add_library(pi-yaml-config STATIC errors.cpp paths.cpp color.cpp meta.cpp)
+add_library(pi-yaml-config STATIC errors.cpp paths.cpp color.cpp meta.cpp assets.cpp)
 
 # specify include directories for pi-yaml-config
 target_include_directories(
@@ -28,6 +28,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/errors.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/color.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/convert_flags.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/meta.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/assets.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
 
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/flags/init_flags.hpp
