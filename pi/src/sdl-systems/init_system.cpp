@@ -4,7 +4,10 @@
 #include <utility> // std::exchange
 
 #include <SDL2/SDL.h>
+#include <yaml-cpp/node/node.h>
 
+#include "pi/system-graph/system_graph.hpp"
+#include "pi/sdl-systems/init_params.hpp"
 #include "pi/yaml-config/errors.hpp"
 
 pi::init_system::init_system(init_system && tmp)

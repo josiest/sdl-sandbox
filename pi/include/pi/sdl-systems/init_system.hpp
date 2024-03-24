@@ -1,8 +1,13 @@
 #pragma once
-#include "pi/system-graph/system_graph.hpp"
-#include "pi/sdl-systems/init_params.hpp"
+
+namespace YAML {
+class Node;
+}
 
 inline namespace pi {
+class system_graph;
+struct init_params;
+
 class init_system {
 public:
 #pragma region Rule of Five
