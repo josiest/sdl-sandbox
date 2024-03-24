@@ -15,6 +15,7 @@ find_package(EnTT REQUIRED)
 add_subdirectory(src/events)
 add_subdirectory(src/graphs)
 add_subdirectory(src/system-graph)
+add_subdirectory(src/containers)
 
 # generate version for config file
 set(version 0.1.0)
