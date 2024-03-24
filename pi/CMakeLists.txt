@@ -19,6 +19,7 @@ add_subdirectory(src/containers)
 add_subdirectory(src/reflection)
 add_subdirectory(src/algorithm)
 add_subdirectory(src/yaml-config)
+add_subdirectory(src/sdl-systems)
 
 # generate version for config file
 set(version 0.1.0)
