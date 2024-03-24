@@ -18,6 +18,7 @@ add_subdirectory(src/system-graph)
 add_subdirectory(src/containers)
 add_subdirectory(src/reflection)
 add_subdirectory(src/algorithm)
+add_subdirectory(src/yaml-config)
 
 # generate version for config file
 set(version 0.1.0)
