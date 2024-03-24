@@ -30,6 +30,7 @@ install(TARGETS pi-yaml-config
 # install the include files for pi-yaml-config
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/errors.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/paths.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/yaml-config/primitives.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/yaml-config)
 
 # create and install the target files
