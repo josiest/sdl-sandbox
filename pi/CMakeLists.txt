@@ -13,6 +13,7 @@ find_package(EnTT REQUIRED)
 
 # define the modules in subdirectories
 add_subdirectory(src/events)
+add_subdirectory(src/graphs)
 
 # generate version for config file
 set(version 0.1.0)
