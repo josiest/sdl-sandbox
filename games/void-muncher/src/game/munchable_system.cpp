@@ -6,7 +6,7 @@
 #include <random>
 #include <numbers>
 
-#include "pi/systems/system_graph.hpp"
+#include "pi/system-graph/system_graph.hpp"
 
 #include "mechanics/components.hpp"
 #include "game/world_system.hpp"

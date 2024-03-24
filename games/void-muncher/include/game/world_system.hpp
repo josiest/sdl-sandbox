@@ -3,7 +3,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_rect.h>
 #include <entt/entity/registry.hpp>
-#include "pi/systems/system_graph.hpp"
+#include "pi/system-graph/system_graph.hpp"
 
 inline namespace munch {
 

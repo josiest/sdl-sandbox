@@ -5,9 +5,9 @@
 #include "pi/algorithm/primitives.hpp"
 #include "pi/events/event_sink.hpp"
 
-#include "pi/meta/reflect.hpp"
-#include "pi/meta/color.hpp"
-#include "pi/config/color.hpp"
+#include "pi/reflection/reflect.hpp"
+#include "pi/reflection/color.hpp"
+#include "pi/yaml-config/color.hpp"
 
 #include "input/keyboard_axis.hpp"
 #include "game/world_system.hpp"

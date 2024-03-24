@@ -12,7 +12,7 @@
 #include <entt/entity/registry.hpp>
 #include <SDL2/SDL_pixels.h>
 
-#include "pi/systems/system_graph.hpp"
+#include "pi/system-graph/system_graph.hpp"
 #include "game/world_system.hpp"
 
 inline namespace munch {

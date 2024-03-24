@@ -6,35 +6,35 @@ find_package(SDL2 REQUIRED)
 find_package(EnTT REQUIRED)
 
 list(APPEND CMAKE_PREFIX_PATH ../lib/cmake)
-find_package(pi COMPONENTS events)
+find_package(pi COMPONENTS graphs system-graph sdl-systems events yaml-config)
 
 add_library(basic-components INTERFACE)
 target_link_libraries(basic-components INTERFACE # mingw needs extra linkage for sdl
                                                  $<$<BOOL:MINGW>:mingw32 SDL2main>)
 
 add_library(world-system STATIC src/game/world_system.cpp)
-target_include_directories(world-system PRIVATE include ../../include)
+target_include_directories(world-system PRIVATE include ../include)
 target_link_libraries(world-system PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main>
         EnTT::EnTT SDL2)
 
 add_library(keyboard-axis STATIC src/input/keyboard_axis.cpp)
-target_include_directories(keyboard-axis PRIVATE include ../../include)
+target_include_directories(keyboard-axis PRIVATE include ../include)
 target_link_libraries(keyboard-axis PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main>
         EnTT::EnTT SDL2)
 
 add_library(colored-squares STATIC src/visuals/colored_square.cpp)
-target_include_directories(colored-squares PRIVATE include ../../include)
+target_include_directories(colored-squares PRIVATE include ../include)
 target_link_libraries(colored-squares PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT SDL2
         basic-components)
 
 add_library(basic-movement STATIC src/mechanics/movement.cpp)
-target_include_directories(basic-movement PRIVATE include ../../include)
+target_include_directories(basic-movement PRIVATE include ../include)
 target_link_libraries(basic-movement PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT SDL2
@@ -48,11 +48,11 @@ set_target_properties(
         PROPERTIES
         CXX_STANDARD 23 CXX_STANDARD_REQUIRED TRUE)
 
-target_include_directories(void-muncher PRIVATE ../../include include)
+target_include_directories(void-muncher PRIVATE ../include include)
 
 target_link_libraries(void-muncher PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main>
         SDL2 EnTT::EnTT yaml-cpp
-        pi::events world-system basic-components keyboard-axis
-        colored-squares basic-movement)
+        pi::graphs pi::system-graph pi::sdl-systems pi::yaml-config pi::events
+        world-system basic-components keyboard-axis colored-squares basic-movement)
