@@ -3,7 +3,7 @@
 # Define the Library
 #
 
-add_library(pi-sdl-systems STATIC init_params.cpp init_system.cpp)
+add_library(pi-sdl-systems STATIC init_params.cpp init_system.cpp sdl_deleter.cpp)
 
 # specify include directories for pi-sdl-systems
 target_include_directories(
@@ -30,6 +30,7 @@ install(TARGETS pi-sdl-systems
 # install the include files for pi-sdl-systems
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/init_params.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/init_system.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/sdl_deleter.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/sdl-systems)
 
 # create and install the target files
