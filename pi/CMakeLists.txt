@@ -16,6 +16,7 @@ add_subdirectory(src/events)
 add_subdirectory(src/graphs)
 add_subdirectory(src/system-graph)
 add_subdirectory(src/containers)
+add_subdirectory(src/reflection)
 
 # generate version for config file
 set(version 0.1.0)

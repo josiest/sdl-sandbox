@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-set(_pi_supported_components events graphs system-graph)
+set(_pi_supported_components events graphs system-graph containers reflection)
 foreach(_comp ${pi_FIND_COMPONENTS})
     if (NOT _comp IN_LIST _pi_supported_components)
         set(pi_FOUND False)
