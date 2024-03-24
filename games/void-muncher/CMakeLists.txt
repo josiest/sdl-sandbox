@@ -10,6 +10,10 @@ set_property(TARGET pi::events PROPERTY
              IMPORTED_LOCATION
              "${CMAKE_CURRENT_SOURCE_DIR}/../lib/pi/events/libpi-events.a")
 
+add_library(basic-components INTERFACE)
+target_link_libraries(basic-components INTERFACE # mingw needs extra linkage for sdl
+                                                 $<$<BOOL:MINGW>:mingw32 SDL2main>)
+
 add_library(world-system STATIC src/game/world_system.cpp)
 target_include_directories(world-system PRIVATE include ../../include)
 target_link_libraries(world-system PRIVATE
@@ -28,15 +32,15 @@ add_library(colored-squares STATIC src/visuals/colored_square.cpp)
 target_include_directories(colored-squares PRIVATE include ../../include)
 target_link_libraries(colored-squares PRIVATE
         # mingw needs extra linkage for sdl
-        $<$<BOOL:MINGW>:mingw32 SDL2main>
-        EnTT::EnTT SDL2)
+        $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT SDL2
+        basic-components)
 
 add_library(basic-movement STATIC src/mechanics/movement.cpp)
 target_include_directories(basic-movement PRIVATE include ../../include)
 target_link_libraries(basic-movement PRIVATE
         # mingw needs extra linkage for sdl
-        $<$<BOOL:MINGW>:mingw32 SDL2main>
-        EnTT::EnTT SDL2)
+        $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT SDL2
+        basic-components)
 
 add_executable(void-muncher src/void_muncher.cpp src/game/munchable_system.cpp
                             src/mechanics/player_controller.cpp)
@@ -52,5 +56,5 @@ target_link_libraries(void-muncher PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main>
         SDL2 EnTT::EnTT yaml-cpp
-        pi::events
-        world-system keyboard-axis colored-squares basic-movement)
+        pi::events world-system basic-components keyboard-axis
+        colored-squares basic-movement)
