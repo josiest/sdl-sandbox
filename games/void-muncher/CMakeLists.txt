@@ -5,10 +5,8 @@ find_package(yaml-cpp REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(EnTT REQUIRED)
 
-add_library(pi::events STATIC IMPORTED)
-set_property(TARGET pi::events PROPERTY
-             IMPORTED_LOCATION
-             "${CMAKE_CURRENT_SOURCE_DIR}/../lib/pi/events/libpi-events.a")
+list(APPEND CMAKE_PREFIX_PATH ../lib/cmake)
+find_package(pi COMPONENTS events)
 
 add_library(basic-components INTERFACE)
 target_link_libraries(basic-components INTERFACE # mingw needs extra linkage for sdl

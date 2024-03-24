@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+set(_pi_supported_components events)
+foreach(_comp ${pi_FIND_COMPONENTS})
+    if (NOT _comp IN_LIST _pi_supported_components)
+        set(pi_FOUND False)
+        set(pi_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+    endif()
+    include("${CMAKE_CURRENT_LIST_DIR}/${_comp}/pi-${_comp}-targets.cmake")
+    add_library(pi::${_comp} ALIAS pi::pi-${_comp})
+endforeach()

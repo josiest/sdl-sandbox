@@ -4,12 +4,11 @@
 #
 
 add_library(pi-events STATIC event_sink.cpp)
-add_library(pi::events ALIAS pi-events)
 
 # specify include directories for pi-events
 target_include_directories(
         pi-events PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include"
+        "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # link the required dependencies
@@ -29,7 +28,7 @@ install(TARGETS pi-events
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/events)
 
 # install the include files for pi-events
-install(FILES ../../../include/pi/events/event_sink.hpp
+install(FILES ${CMAKE_SOURCE_DIR}/include/pi/events/event_sink.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/events)
 
 # create and install the target files
