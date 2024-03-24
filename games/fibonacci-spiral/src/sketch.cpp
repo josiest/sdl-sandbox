@@ -7,9 +7,9 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_events.h>
 
-#include "pi/config/assets.hpp"
-#include "pi/systems/system_graph.hpp"
-#include "pi/systems/renderer_system.hpp"
+#include "pi/yaml-config/assets.hpp"
+#include "pi/system-graph/system_graph.hpp"
+#include "pi/sdl-systems/renderer_system.hpp"
 
 #include "gameplay_settings.hpp"
 #include "fibonacci_spiral.hpp"

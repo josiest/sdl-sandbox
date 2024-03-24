@@ -1,5 +1,5 @@
 #pragma once
-#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/yaml.h>
 
 #include <string_view>
 #include <string>

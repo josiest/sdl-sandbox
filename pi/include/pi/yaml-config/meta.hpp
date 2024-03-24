@@ -10,12 +10,6 @@
 #include "pi/reflection/reflect.hpp"
 #include "pi/yaml-config/errors.hpp"
 
-template<>
-struct YAML::convert<entt::meta_any> {
-    static YAML::Node encode(const entt::meta_any& obj);
-    static bool decode(const YAML::Node& node, entt::meta_any& obj);
-};
-
 inline namespace pi {
 namespace config {
 
@@ -50,6 +44,46 @@ bool decode_class(const YAML::Node & node, entt::meta_any & obj);
 bool decode_scalar(const YAML::Node & node, entt::meta_any & obj);
 bool decode_map(const YAML::Node & node, entt::meta_any & obj);
 
+}
+}
+template<>
+struct YAML::convert<entt::meta_any> {
+    inline static YAML::Node encode(const entt::meta_any& obj)
+    {
+        const auto type = obj.type();
+        if (type.is_integral()) {
+            return pi::config::encode_integer(obj);
+        }
+        // TODO: encode floating point
+        if (type.is_class()) {
+            return pi::config::encode_class(obj);
+        }
+        // TODO: add more info to message
+        std::printf("failed to encode type\n");
+        return YAML::Node{};
+    }
+
+    inline static bool decode(const YAML::Node& node, entt::meta_any& obj)
+    {
+        namespace msg = YAML::ErrorMsg;
+        if (not node) {
+            std::printf("%s\n", msg::invalid_node);
+            return false;
+        }
+        if (node.IsScalar()) {
+            return pi::config::decode_scalar(node, obj);
+        }
+        if (node.IsMap()) {
+            return pi::config::decode_map(node, obj);
+        }
+        // TODO: decode other yaml-types
+        return false;
+    }
+};
+
+inline namespace pi {
+namespace config {
+
 template<reflectable T>
 bool decode(const YAML::Node & node, T & val)
 {
@@ -65,38 +99,4 @@ bool decode(const YAML::Node & node, T & val)
     return false;
 }
 }
-}
-
-YAML::Node YAML::convert<entt::meta_any>
-               ::encode(const entt::meta_any& obj)
-{
-    const auto type = obj.type();
-    if (type.is_integral()) {
-        return pi::config::encode_integer(obj);
-    }
-    // TODO: encode floating point
-    if (type.is_class()) {
-        return pi::config::encode_class(obj);
-    }
-    // TODO: add more info to message
-    std::printf("failed to encode type\n");
-    return YAML::Node{};
-}
-
-bool YAML::convert<entt::meta_any>
-         ::decode(const YAML::Node& node, entt::meta_any& obj)
-{
-    namespace msg = YAML::ErrorMsg;
-    if (not node) {
-        std::printf("%s\n", msg::invalid_node);
-        return false;
-    }
-    if (node.IsScalar()) {
-        return pi::config::decode_scalar(node, obj);
-    }
-    if (node.IsMap()) {
-        return pi::config::decode_map(node, obj);
-    }
-    // TODO: decode other yaml-types
-    return false;
 }

@@ -1,7 +1,6 @@
 #include "pi/sdl-systems/renderer_system.hpp"
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/renderer_params.hpp"
-#include "pi/yaml-config/errors.hpp"
 
 pi::renderer_system* pi::renderer_system::load(pi::system_graph& systems)
 {

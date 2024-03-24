@@ -176,7 +176,7 @@ bool pi::config::decode_scalar(const YAML::Node & node, entt::meta_any & obj)
     return false;
 }
 
-bool decode_map(const YAML::Node & node, entt::meta_any & obj)
+bool pi::config::decode_map(const YAML::Node & node, entt::meta_any & obj)
 {
     if (not node or not node.IsMap()) { return false; }
     bool success = true;

@@ -6,7 +6,7 @@
 #include <string>
 #include <string_view>
 
-#include "pi/config/meta.hpp"
+#include "pi/yaml-config/meta.hpp"
 
 inline namespace fib {
 struct gameplay_settings {

@@ -1,6 +1,6 @@
 #include "pi/sdl-systems/window_system.hpp"
 #include <SDL2/SDL_video.h>
-#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/yaml.h>
 
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/window_params.hpp"

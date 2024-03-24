@@ -48,59 +48,57 @@ SDL_Window* make_window(const window_params& params);
 
 template<>
 struct YAML::convert<pi::window_params> {
-    static YAML::Node encode(const pi::window_params& params);
-    static bool decode(const YAML::Node& node, pi::window_params& params);
+    inline static YAML::Node encode(const pi::window_params& params)
+    {
+        YAML::Node node;
+        if (params.name)        { node["name"] = *params.name; }
+        if (params.position)    { node["position"] = *params.position; }
+        if (params.size)        { node["size"] = *params.size; }
+        if (params.flags)       { node["flags"] = *params.flags; }
+        return node;
+    }
+
+    inline static bool decode(const YAML::Node& node, pi::window_params& params)
+    {
+        namespace msg = YAML::ErrorMsg;
+
+        if (not node.IsMap()) {
+            msg::error(node, msg::not_a_map);
+            return false;
+        }
+        if (const auto name = node["name"]) {
+            if (name.IsScalar()) {
+                params.name = name.as<std::string>();
+            }
+            else {
+                msg::error(name, "failed to read window name");
+            }
+        }
+        using as_point = YAML::convert<SDL_Point>;
+        if (const auto position = node["position"]) {
+            if (SDL_Point value; as_point::decode(position, value)) {
+                params.position = value;
+            }
+            else {
+                msg::error(position, "failed to read window position");
+            }
+        }
+        if (const auto size = node["size"]) {
+            if (SDL_Point value; as_point::decode(size, value)) {
+                params.size = value;
+            }
+            else {
+                msg::error(size, "failed to read window size");
+            }
+        }
+        if (const auto flags = node["flags"]) {
+            std::uint32_t value = 0;
+            if (not pi::read_flags_into<SDL_WindowFlags>(flags, value)) {
+                msg::error(flags, "encountered errors reading window flags");
+            }
+            params.flags = value;
+        }
+        return true;
+    }
 };
 
-YAML::Node YAML::convert<pi::window_params>::encode(const pi::window_params& params)
-{
-    YAML::Node node;
-    if (params.name)        { node["name"] = *params.name; }
-    if (params.position)    { node["position"] = *params.position; }
-    if (params.size)        { node["size"] = *params.size; }
-    if (params.flags)       { node["flags"] = *params.flags; }
-    return node;
-}
-
-bool YAML::convert<pi::window_params>::decode(const YAML::Node& node, pi::window_params& params)
-{
-    namespace msg = YAML::ErrorMsg;
-
-    if (not node.IsMap()) {
-        msg::error(node, msg::not_a_map);
-        return false;
-    }
-    if (const auto name = node["name"]) {
-        if (name.IsScalar()) {
-            params.name = name.as<std::string>();
-        }
-        else {
-            msg::error(name, "failed to read window name");
-        }
-    }
-    using as_point = YAML::convert<SDL_Point>;
-    if (const auto position = node["position"]) {
-        if (SDL_Point value; as_point::decode(position, value)) {
-            params.position = value;
-        }
-        else {
-            msg::error(position, "failed to read window position");
-        }
-    }
-    if (const auto size = node["size"]) {
-        if (SDL_Point value; as_point::decode(size, value)) {
-            params.size = value;
-        }
-        else {
-            msg::error(size, "failed to read window size");
-        }
-    }
-    if (const auto flags = node["flags"]) {
-        std::uint32_t value = 0;
-        if (not pi::read_flags_into<SDL_WindowFlags>(flags, value)) {
-            msg::error(flags, "encountered errors reading window flags");
-        }
-        params.flags = value;
-    }
-    return true;
-}

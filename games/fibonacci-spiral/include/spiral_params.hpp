@@ -11,12 +11,12 @@
 
 #include <SDL2/SDL_pixels.h>
 
-#include "pi/meta/reflect.hpp"
-#include "pi/meta/color.hpp"
+#include "pi/reflection/reflect.hpp"
+#include "pi/reflection/color.hpp"
 
-#include "pi/config/color.hpp"
-#include "pi/config/paths.hpp"
-#include "pi/config/meta.hpp"
+#include "pi/yaml-config/color.hpp"
+#include "pi/yaml-config/paths.hpp"
+#include "pi/yaml-config/meta.hpp"
 
 inline namespace fib {
 struct spiral_data {

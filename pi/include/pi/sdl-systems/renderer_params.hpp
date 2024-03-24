@@ -22,11 +22,11 @@ SDL_Renderer* make_renderer(SDL_Window* window, const renderer_params& params);
 template<>
 struct YAML::convert<pi::renderer_params> {
 
-    static YAML::Node encode(const pi::renderer_params& params)
+    inline static YAML::Node encode(const pi::renderer_params& params)
     {
         return pi::encode_flags<SDL_RendererFlags>(*params.flags);
     }
-    static bool decode(const YAML::Node& node, pi::renderer_params& params)
+    inline static bool decode(const YAML::Node& node, pi::renderer_params& params)
     {
         namespace msg = YAML::ErrorMsg;
         if (not node) {

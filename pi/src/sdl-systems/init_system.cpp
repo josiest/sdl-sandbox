@@ -4,7 +4,7 @@
 #include <utility> // std::exchange
 
 #include <SDL2/SDL.h>
-#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/yaml.h>
 
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/init_params.hpp"
