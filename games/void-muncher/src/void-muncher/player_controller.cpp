@@ -13,6 +13,7 @@ munch::player_controller::create(munch::world_system* world, const
     auto& entities = world->entities;
 
     player.id = entities.create();
+    world->player_id = player.id;
     entities.emplace<component::bbox>(player.id, 0.f, 0.f, config.starting_size);
     entities.emplace<component::color>(player.id, config.color.r, config.color.g, config.color.b);
     entities.emplace<component::velocity>(player.id, 0.f, 0.f);

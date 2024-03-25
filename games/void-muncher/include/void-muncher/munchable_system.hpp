@@ -49,6 +49,9 @@ struct munchable_system{
     // variance in target angle from spawn to center
     float target_angle_variance = .5f;
 
+    // variance in size from the player
+    float size_variance = 0.1f;
+
     std::uint32_t ticks_since_spawn = std::numeric_limits<std::uint32_t>::max();
 };
 }

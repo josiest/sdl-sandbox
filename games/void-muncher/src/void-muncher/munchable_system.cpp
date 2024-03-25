@@ -56,12 +56,22 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     const bool is_on_wall = coin_toss(world.rng);
     const bool is_negative = coin_toss(world.rng);
 
+    float size = 20.f;
+    if (auto const * player_box = world.entities.try_get<component::bbox>(world.player_id)) {
+        std::lognormal_distribution size_dist{ std::log(player_box->size),
+                                               std::log(std::sqrt(size_variance)) };
+        size = size_dist(world.rng);
+    }
+
+    // use lognormal distribution to generate a positive random size
+    //   player_box.size is assumed to be positiive
+
     const auto& bbox = entities.emplace<com::bbox>(munchable,
         not is_on_wall ? X(world.rng)
                        : (is_negative? world.bounds.x : world.bounds.x+world.bounds.w),
             is_on_wall ? Y(world.rng)
                        : (is_negative? world.bounds.y : world.bounds.y+world.bounds.h),
-        20.f
+        size
     );
 
     constexpr float pi = std::numbers::pi_v<float>;

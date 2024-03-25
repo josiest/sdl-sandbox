@@ -16,5 +16,6 @@ struct world_system {
     entt::registry entities;
     std::mt19937 rng;
     SDL_FRect bounds{ 0.f, 0.f, 800.f, 600.f };
+    entt::entity player_id;
 };
 }
