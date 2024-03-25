@@ -5,8 +5,11 @@
 
 add_library(pi-reflection INTERFACE)
 add_library(pi::reflection ALIAS pi-reflection)
-target_link_libraries(pi-reflection INTERFACE # mingw needs extra linkage for sdl
-                                              $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT)
+
+if (TARGET SDL2::SDL2main)
+    target_link_libraries(pi-reflection INTERFACE SDL2main)
+endif ()
+target_link_libraries(pi-reflection INTERFACE SDL2::SDL2 EnTT::EnTT)
 
 #
 # Install the Library

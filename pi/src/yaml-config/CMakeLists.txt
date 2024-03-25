@@ -14,8 +14,10 @@ target_include_directories(
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # link the required dependencies
-target_link_libraries(pi-yaml-config PUBLIC # mingw needs extra linkage for sdl
-                                            $<$<BOOL:MINGW>:mingw32 SDL2main> SDL2 yaml-cpp
+if (TARGET SDL2::SDL2main)
+    target_link_libraries(pi-yaml-config PUBLIC SDL2main)
+endif ()
+target_link_libraries(pi-yaml-config PUBLIC SDL2::SDL2 yaml-cpp::yaml-cpp
                                             pi::containers pi::reflection)
 
 #

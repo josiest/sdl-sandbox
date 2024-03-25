@@ -12,11 +12,11 @@ target_include_directories(
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
+if (TARGET SDL2::SDL2main)
+    target_link_libraries(pi-events PUBLIC SDL2main)
+endif ()
 # link the required dependencies
-target_link_libraries(pi-events PUBLIC
-        # mingw needs extra linkage for sdl
-        $<$<BOOL:MINGW>:mingw32 SDL2main>
-        EnTT::EnTT SDL2)
+target_link_libraries(pi-events PUBLIC EnTT::EnTT SDL2::SDL2)
 
 #
 # Install the Library
