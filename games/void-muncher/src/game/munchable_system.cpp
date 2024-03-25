@@ -8,7 +8,7 @@
 
 #include "pi/system-graph/system_graph.hpp"
 
-#include "mechanics/components.hpp"
+#include "basic-components/basic_components.hpp"
 #include "game/world_system.hpp"
 
 munch::munchable_system* munch::munchable_system::load(pi::system_graph & systems)

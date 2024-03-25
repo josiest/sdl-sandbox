@@ -13,8 +13,7 @@ find_package(pi COMPONENTS graphs containers reflection events
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_library(basic-components INTERFACE)
-target_link_libraries(basic-components INTERFACE SDL2::SDL2)
+add_subdirectory(src/basic-components)
 
 add_library(world-system STATIC src/game/world_system.cpp)
 target_include_directories(world-system PRIVATE include ../include)
@@ -47,6 +46,5 @@ if (TARGET SDL2::SDL2main)
 endif ()
 target_link_libraries(void-muncher PRIVATE
         SDL2::SDL2 EnTT::EnTT yaml-cpp::yaml-cpp
-        pi::graphs pi::containers pi::reflection
         pi::events pi::system-graph pi::yaml-config pi::sdl-systems
         world-system basic-components keyboard-axis colored-squares basic-movement)

@@ -4,7 +4,7 @@
 #include <SDL2/SDL_rect.h>
 #include <entt/entity/registry.hpp>
 
-#include "mechanics/components.hpp"
+#include "basic-components/basic_components.hpp"
 
 inline namespace munch {
 constexpr SDL_FPoint

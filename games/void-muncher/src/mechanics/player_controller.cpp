@@ -1,5 +1,5 @@
 #include "mechanics/player_controller.hpp"
-#include "mechanics/components.hpp"
+#include "basic-components/basic_components.hpp"
 
 munch::player_controller
 munch::player_controller::create(munch::world_system* world, const

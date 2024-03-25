@@ -1,6 +1,6 @@
 #include "visuals/colored_square.hpp"
 
-#include "mechanics/components.hpp"
+#include "basic-components/basic_components.hpp"
 #include "math/arithmetic.hpp"
 
 void munch::draw_colored_square(SDL_Renderer* renderer, const SDL_Rect& bbox, const SDL_Color& color)
