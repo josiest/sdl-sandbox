@@ -4,6 +4,7 @@
 #
 
 add_library(pi-events STATIC event_sink.cpp)
+add_library(pi::events ALIAS pi-events)
 
 # specify include directories for pi-events
 target_include_directories(

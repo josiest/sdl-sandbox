@@ -8,7 +8,7 @@
 
 template<>
 struct YAML::convert<SDL_RendererFlags> {
-    static constexpr lookup_table<std::uint32_t, std::string_view, 4>
+    static constexpr pi::lookup_table<std::uint32_t, std::string_view, 4>
     flag_names {
         { SDL_RENDERER_SOFTWARE,        "software" },
         { SDL_RENDERER_ACCELERATED,     "accelerated" },

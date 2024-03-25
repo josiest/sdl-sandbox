@@ -16,7 +16,7 @@ struct YAML::convert<SDL_WindowFlags>{
         return flag_names.find(name);
     }
 
-    static constexpr lookup_table<std::uint32_t, std::string_view, 20>
+    static constexpr pi::lookup_table<std::uint32_t, std::string_view, 20>
     flag_names{
         { SDL_WINDOW_FULLSCREEN,            "fullscreen" },
         { SDL_WINDOW_FULLSCREEN_DESKTOP,    "fullscreen-desktop" },

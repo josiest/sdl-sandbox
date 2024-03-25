@@ -12,10 +12,11 @@ find_package(yaml-cpp REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(EnTT REQUIRED)
 
-list(APPEND CMAKE_PREFIX_PATH ../lib/cmake)
-find_package(pi COMPONENTS graphs system-graph sdl-systems yaml-config REQUIRED)
+list(APPEND CMAKE_PREFIX_PATH ../lib)
+find_package(pi COMPONENTS containers reflection graphs
+                           system-graph yaml-config sdl-systems REQUIRED)
 
 target_link_libraries(sketch PRIVATE
         # mingw needs extra linkage for sdl
         $<$<BOOL:MINGW>:mingw32 SDL2main> SDL2 EnTT::EnTT yaml-cpp
-        pi::graphs pi::system-graph pi::sdl-systems pi::yaml-config)
+        pi::system-graph pi::yaml-config pi::sdl-systems)

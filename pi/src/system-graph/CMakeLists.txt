@@ -4,7 +4,8 @@
 #
 
 add_library(pi-system-graph INTERFACE)
-target_link_libraries(pi-system-graph INTERFACE pi-graphs)
+add_library(pi::system-graph ALIAS pi-system-graph)
+target_link_libraries(pi-system-graph INTERFACE pi::graphs)
 
 #
 # Install the Library

@@ -4,6 +4,7 @@
 #
 
 add_library(pi-reflection INTERFACE)
+add_library(pi::reflection ALIAS pi-reflection)
 target_link_libraries(pi-reflection INTERFACE # mingw needs extra linkage for sdl
                                               $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT)
 

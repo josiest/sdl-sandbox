@@ -7,6 +7,8 @@ add_library(pi-sdl-systems STATIC init_params.cpp init_system.cpp sdl_deleter.cp
                                   window_params.cpp window_system.cpp
                                   renderer_params.cpp renderer_system.cpp)
 
+add_library(pi::sdl-systems ALIAS pi-sdl-systems)
+
 # specify include directories for pi-sdl-systems
 target_include_directories(
         pi-sdl-systems PUBLIC
@@ -16,8 +18,8 @@ target_include_directories(
 # link the required dependencies
 target_link_libraries(pi-sdl-systems PUBLIC
         # mingw needs extra linkage for sdl
-        $<$<BOOL:MINGW>:mingw32 SDL2main>
-        EnTT::EnTT SDL2)
+        $<$<BOOL:MINGW>:mingw32 SDL2main> EnTT::EnTT SDL2
+        pi::system-graph pi::yaml-config)
 
 #
 # Install the Library

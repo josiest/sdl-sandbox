@@ -4,6 +4,7 @@
 #
 
 add_library(pi-containers INTERFACE)
+add_library(pi::containers ALIAS pi-containers)
 
 #
 # Install the Library

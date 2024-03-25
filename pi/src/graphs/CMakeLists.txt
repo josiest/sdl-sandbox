@@ -4,6 +4,7 @@
 #
 
 add_library(pi-graphs INTERFACE)
+add_library(pi::graphs ALIAS pi-graphs)
 
 #
 # Install the Library

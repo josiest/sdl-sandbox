@@ -4,6 +4,7 @@
 #
 
 add_library(pi-algorithm INTERFACE)
+add_library(pi::algorithm ALIAS pi-algorithm)
 target_link_libraries(pi-algorithm INTERFACE # mingw needs extra linkage for sdl
                                              $<$<BOOL:MINGW>:mingw32 SDL2main>)
 

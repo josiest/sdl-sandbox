@@ -5,6 +5,7 @@
 
 find_package(yaml-cpp REQUIRED)
 add_library(pi-yaml-config STATIC errors.cpp paths.cpp color.cpp meta.cpp assets.cpp)
+add_library(pi::yaml-config ALIAS pi-yaml-config)
 
 # specify include directories for pi-yaml-config
 target_include_directories(
@@ -14,8 +15,8 @@ target_include_directories(
 
 # link the required dependencies
 target_link_libraries(pi-yaml-config PUBLIC # mingw needs extra linkage for sdl
-                                            $<$<BOOL:MINGW>:mingw32 SDL2main>
-                                            SDL2 yaml-cpp)
+                                            $<$<BOOL:MINGW>:mingw32 SDL2main> SDL2 yaml-cpp
+                                            pi::containers pi::reflection)
 
 #
 # Install the Library
