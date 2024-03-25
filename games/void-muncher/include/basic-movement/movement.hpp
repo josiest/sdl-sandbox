@@ -2,7 +2,7 @@
 #include <cstdint>
 
 #include <SDL2/SDL_rect.h>
-#include <entt/entity/registry.hpp>
+#include <entt/entity/fwd.hpp>
 
 #include "basic-components/basic_components.hpp"
 

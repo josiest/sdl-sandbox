@@ -17,10 +17,7 @@ add_subdirectory(src/basic-components)
 add_subdirectory(src/world-system)
 add_subdirectory(src/input/keyboard-axis)
 add_subdirectory(src/colored-squares)
-
-add_library(basic-movement STATIC src/mechanics/movement.cpp)
-target_include_directories(basic-movement PRIVATE include ../include)
-target_link_libraries(basic-movement PRIVATE EnTT::EnTT SDL2::SDL2 basic-components)
+add_subdirectory(src/basic-movement)
 
 add_executable(void-muncher src/void_muncher.cpp src/game/munchable_system.cpp
                             src/mechanics/player_controller.cpp)

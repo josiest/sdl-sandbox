@@ -1,4 +1,5 @@
-#include "mechanics/movement.hpp"
+#include "basic-movement/movement.hpp"
+#include <entt/entity/registry.hpp>
 
 void munch::update_positions(entt::registry& entities, std::uint32_t delta_ticks)
 {

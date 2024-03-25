@@ -16,7 +16,7 @@
 #include "input/keyboard-axis/keyboard_axis.hpp"
 
 #include "mechanics/player_controller.hpp"
-#include "mechanics/movement.hpp"
+#include "basic-movement/movement.hpp"
 #include "game/munchable_system.hpp"
 #include "world-system/world_system.hpp"
 
