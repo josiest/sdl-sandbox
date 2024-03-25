@@ -15,10 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(src/basic-components)
 add_subdirectory(src/world-system)
-
-add_library(keyboard-axis STATIC src/input/keyboard_axis.cpp)
-target_include_directories(keyboard-axis PRIVATE include ../include)
-target_link_libraries(keyboard-axis PRIVATE SDL2::SDL2 EnTT::EnTT)
+add_subdirectory(src/input/keyboard-axis)
 
 add_library(colored-squares STATIC src/visuals/colored_square.cpp)
 target_include_directories(colored-squares PRIVATE include ../include)

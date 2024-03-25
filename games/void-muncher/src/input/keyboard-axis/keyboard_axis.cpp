@@ -1,4 +1,4 @@
-#include "input/keyboard_axis.hpp"
+#include "input/keyboard-axis/keyboard_axis.hpp"
 
 void pi::keyboard_axis::connect_to(pi::event_sink& sink)
 {

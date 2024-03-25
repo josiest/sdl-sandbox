@@ -3,7 +3,7 @@
 #include <entt/signal/sigh.hpp>
 
 #include "pi/events/event_sink.hpp"
-#include "input/axis2d.hpp"
+#include "input/keyboard-axis/axis2d.hpp"
 
 inline namespace pi {
 class keyboard_axis {

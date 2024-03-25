@@ -13,7 +13,7 @@
 #include "visuals/colored_square.hpp"
 
 #include "pi/events/event_sink.hpp"
-#include "input/keyboard_axis.hpp"
+#include "input/keyboard-axis/keyboard_axis.hpp"
 
 #include "mechanics/player_controller.hpp"
 #include "mechanics/movement.hpp"

@@ -9,7 +9,7 @@
 #include "pi/reflection/color.hpp"
 #include "pi/yaml-config/color.hpp"
 
-#include "input/keyboard_axis.hpp"
+#include "input/keyboard-axis/keyboard_axis.hpp"
 #include "world-system/world_system.hpp"
 
 inline namespace munch {
