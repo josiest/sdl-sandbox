@@ -1,10 +1,9 @@
 #pragma once
+#include <entt/entity/fwd.hpp>
 
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_render.h>
-
-#include <entt/entity/registry.hpp>
+struct SDL_Renderer;
+struct SDL_Rect;
+struct SDL_Color;
 
 inline namespace munch {
 

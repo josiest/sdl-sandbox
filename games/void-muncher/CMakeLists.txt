@@ -16,10 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_subdirectory(src/basic-components)
 add_subdirectory(src/world-system)
 add_subdirectory(src/input/keyboard-axis)
-
-add_library(colored-squares STATIC src/visuals/colored_square.cpp)
-target_include_directories(colored-squares PRIVATE include ../include)
-target_link_libraries(colored-squares PRIVATE EnTT::EnTT SDL2::SDL2 basic-components)
+add_subdirectory(src/colored-squares)
 
 add_library(basic-movement STATIC src/mechanics/movement.cpp)
 target_include_directories(basic-movement PRIVATE include ../include)

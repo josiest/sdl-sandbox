@@ -10,7 +10,7 @@
 #include "pi/yaml-config/assets.hpp"
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/renderer_system.hpp"
-#include "visuals/colored_square.hpp"
+#include "colored-squares/colored_square.hpp"
 
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard-axis/keyboard_axis.hpp"

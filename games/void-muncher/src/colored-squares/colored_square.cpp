@@ -1,7 +1,13 @@
-#include "visuals/colored_square.hpp"
+#include "colored-squares/colored_square.hpp"
+#include "colored-squares/arithmetic.hpp"
 
 #include "basic-components/basic_components.hpp"
-#include "math/arithmetic.hpp"
+
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_pixels.h>
+
+#include <entt/entity/registry.hpp>
 
 void munch::draw_colored_square(SDL_Renderer* renderer, const SDL_Rect& bbox, const SDL_Color& color)
 {
