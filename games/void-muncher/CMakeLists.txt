@@ -19,8 +19,8 @@ add_subdirectory(src/input/keyboard-axis)
 add_subdirectory(src/colored-squares)
 add_subdirectory(src/basic-movement)
 
-add_executable(void-muncher src/void_muncher.cpp src/game/munchable_system.cpp
-                            src/mechanics/player_controller.cpp)
+add_executable(void-muncher src/void_muncher.cpp src/void-muncher/munchable_system.cpp
+                            src/void-muncher/player_controller.cpp)
 
 target_include_directories(void-muncher PRIVATE ../include include)
 

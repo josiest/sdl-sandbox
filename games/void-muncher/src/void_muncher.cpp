@@ -15,10 +15,10 @@
 #include "pi/events/event_sink.hpp"
 #include "input/keyboard-axis/keyboard_axis.hpp"
 
-#include "mechanics/player_controller.hpp"
-#include "basic-movement/movement.hpp"
-#include "game/munchable_system.hpp"
 #include "world-system/world_system.hpp"
+#include "basic-movement/movement.hpp"
+#include "void-muncher/player_controller.hpp"
+#include "void-muncher/munchable_system.hpp"
 
 namespace fs = std::filesystem;
 
