@@ -1,5 +1,6 @@
 #pragma once
 #include <concepts>
+#include <ranges>
 #include <algorithm>
 
 #include <functional>
@@ -102,7 +103,7 @@ inline auto generate_sequence(const spiral_data& spiral, SDL_Rect& guide)
 inline void draw_spiral(SDL_Renderer* renderer, const spiral_data& spiral)
 {
     namespace ranges = std::ranges;
-    namespace views = std::views;
+    namespace views = std::ranges::views;
 
     // the pattern will be drawn to the entire screen
     SDL_Rect render_frame{ 0, 0, 0, 0 };
