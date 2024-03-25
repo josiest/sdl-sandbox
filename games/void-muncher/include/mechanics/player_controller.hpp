@@ -10,7 +10,7 @@
 #include "pi/yaml-config/color.hpp"
 
 #include "input/keyboard_axis.hpp"
-#include "game/world_system.hpp"
+#include "world-system/world_system.hpp"
 
 inline namespace munch {
 struct muncher_data {

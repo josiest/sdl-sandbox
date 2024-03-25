@@ -1,4 +1,4 @@
-#include "game/world_system.hpp"
+#include "world-system/world_system.hpp"
 
 munch::world_system::world_system()
     : rng{ std::random_device{}() }

@@ -18,7 +18,7 @@
 #include "mechanics/player_controller.hpp"
 #include "mechanics/movement.hpp"
 #include "game/munchable_system.hpp"
-#include "game/world_system.hpp"
+#include "world-system/world_system.hpp"
 
 namespace fs = std::filesystem;
 

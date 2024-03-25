@@ -13,7 +13,7 @@
 #include <SDL2/SDL_pixels.h>
 
 #include "pi/system-graph/system_graph.hpp"
-#include "game/world_system.hpp"
+#include "world-system/world_system.hpp"
 
 inline namespace munch {
 

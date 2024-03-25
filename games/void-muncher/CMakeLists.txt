@@ -14,10 +14,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(src/basic-components)
-
-add_library(world-system STATIC src/game/world_system.cpp)
-target_include_directories(world-system PRIVATE include ../include)
-target_link_libraries(world-system INTERFACE SDL2::SDL2 EnTT::EnTT)
+add_subdirectory(src/world-system)
 
 add_library(keyboard-axis STATIC src/input/keyboard_axis.cpp)
 target_include_directories(keyboard-axis PRIVATE include ../include)
@@ -33,11 +30,6 @@ target_link_libraries(basic-movement PRIVATE EnTT::EnTT SDL2::SDL2 basic-compone
 
 add_executable(void-muncher src/void_muncher.cpp src/game/munchable_system.cpp
                             src/mechanics/player_controller.cpp)
-
-set_target_properties(
-        void-muncher world-system keyboard-axis colored-squares basic-movement
-        PROPERTIES
-        CXX_STANDARD 23 CXX_STANDARD_REQUIRED TRUE)
 
 target_include_directories(void-muncher PRIVATE ../include include)
 
