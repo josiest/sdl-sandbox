@@ -5,6 +5,7 @@ void pi::event_sink::poll()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+        custom_poll.publish(&event);
         switch (event.type) {
         case SDL_QUIT:
             quit.publish();

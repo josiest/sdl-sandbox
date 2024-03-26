@@ -7,6 +7,10 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_sdl2.h"
+#include "imgui/backends/imgui_impl_sdlrenderer2.h"
+
 #include "pi/yaml-config/assets.hpp"
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/renderer_system.hpp"
@@ -62,7 +66,23 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         return EXIT_FAILURE;
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    auto* window = systems.find<pi::window_system>()->window();
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
+
     pi::event_sink events;
+    events.on_poll().connect<&ImGui_ImplSDL2_ProcessEvent>();
 
     quit_handler input;
     input.connect_to(events);
@@ -89,6 +109,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     // (1000 ticks/sec) / (60 frames/sec) = x ticks/frame
     static constexpr std::uint32_t min_ticks = 1000/60;
 
+    bool show_demo_window = false;
     while (not input.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
         const std::uint32_t delta_ticks = current_ticks-ticks;
@@ -99,16 +120,36 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         }
         ticks = current_ticks;
 
+        // ImGui Setup for Current Frame
+        ImGui_ImplSDLRenderer2_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow(&show_demo_window);
+        }
+
         events.poll();
         munch::update_positions(entities, delta_ticks);
         munchables.update(world, delta_ticks);
         player.munch_or_be_munched();
 
+        // Rendering
+        ImGui::Render();
+        SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
         munch::draw_all_colored_squares(entities, renderer);
         SDL_RenderPresent(renderer);
     }
+
+    // Cleanup
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     return EXIT_SUCCESS;
 }
