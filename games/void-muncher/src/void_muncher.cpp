@@ -45,6 +45,21 @@ struct quit_handler {
     bool has_quit = false;
 };
 
+struct demo_handler {
+    void connect_to(pi::event_sink& sink)
+    {
+        sink.on_keyup().connect<&demo_handler::on_keyup>(*this);
+    }
+    void on_keyup(const SDL_KeyboardEvent & event) {
+        const std::uint32_t ctrl_flag = SDL_SCANCODE_LCTRL | SDL_SCANCODE_RCTRL;
+        const bool is_ctrl_pressed = (event.keysym.mod & ctrl_flag) != 0;
+        if (event.keysym.sym == SDLK_d and is_ctrl_pressed) {
+            show_demo = not show_demo;
+        }
+    }
+    bool show_demo = false;
+};
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 {
     pi::system_graph systems;
@@ -85,8 +100,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     pi::event_sink events;
     events.on_poll().connect<&ImGui_ImplSDL2_ProcessEvent>();
 
-    quit_handler input;
-    input.connect_to(events);
+    quit_handler handle_quit;
+    handle_quit.connect_to(events);
+
+    demo_handler handle_imgui_demo;
+    handle_imgui_demo.connect_to(events);
 
     pi::keyboard_axis axis;
     axis.connect_to(events);
@@ -100,7 +118,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
     const auto score_path = munch::resource_path("scoring-system").string();
     const auto score_config = pi::load_asset<munch::score_params>(score_path);
-    munch::munch_system munch_system{ score_config };
+
+    const auto score_widget_path = munch::resource_path("score-widget").string();
+    const auto score_widget = pi::load_asset<munch::score_widget>(score_widget_path);
+    munch::munch_system munch_system{ score_config, score_widget };
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
@@ -114,8 +135,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     // (1000 ticks/sec) / (60 frames/sec) = x ticks/frame
     static constexpr std::uint32_t min_ticks = 1000/60;
 
-    bool show_demo_window = false;
-    while (not input.has_quit) {
+    while (not handle_quit.has_quit) {
         const std::uint32_t current_ticks = SDL_GetTicks();
         const std::uint32_t delta_ticks = current_ticks-ticks;
         // cap the framerate to go easy on the cpu
@@ -124,30 +144,31 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
             continue;
         }
         ticks = current_ticks;
+        events.poll();
+
+        munch::update_positions(entities, delta_ticks);
+        munchables.update(world, delta_ticks);
+        munch_system.munch_or_be_munched(world.entities, player.id);
 
         // ImGui Setup for Current Frame
         ImGui_ImplSDLRenderer2_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window);
+        munch_system.draw_score(renderer);
+        if (handle_imgui_demo.show_demo) {
+            ImGui::ShowDemoWindow(&handle_imgui_demo.show_demo);
         }
-
-        events.poll();
-        munch::update_positions(entities, delta_ticks);
-        munchables.update(world, delta_ticks);
-        munch_system.munch_or_be_munched(world.entities, player.id);
-
         // Rendering
         ImGui::Render();
         SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
-        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
         munch::draw_all_colored_squares(entities, renderer);
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+
         SDL_RenderPresent(renderer);
     }
 
