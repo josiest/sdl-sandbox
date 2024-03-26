@@ -1,3 +1,6 @@
 [submodule "tess"]
 	path = tess
 	url = git@github.com:josiest/tess.git
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui.git
