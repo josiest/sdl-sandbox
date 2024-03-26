@@ -4,4 +4,5 @@ lib/
 
 .idea/
 cmake-build-debug/
-include/tess/
+games/include
+games/misc
