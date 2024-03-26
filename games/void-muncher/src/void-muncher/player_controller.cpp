@@ -37,23 +37,3 @@ void munch::player_controller::orient(const pi::axis2d8_t& axis) const
         world->entities.replace<component::velocity>(id, axis.x*speed, axis.y*speed);
     }
 }
-
-void munch::player_controller::munch_or_be_munched()
-{
-    if (not world or not world->entities.valid(id)) { return; }
-    const SDL_FRect player_bbox = world->entities.get<component::bbox>(id);
-
-    auto munchables = world->entities.view<component::bbox>();
-    for (const auto & [munchable, munchable_bbox] : munchables.each()) {
-
-        const SDL_FRect munchable_b_rect = munchable_bbox;
-        if (munchable == id) { continue; }
-        if (not SDL_HasIntersectionF(&munchable_b_rect, &player_bbox)) { continue; }
-        if (player_bbox.w > munchable_bbox.size) {
-            world->entities.destroy(munchable);
-        }
-        else {
-            world->entities.destroy(id);
-        }
-    }
-}

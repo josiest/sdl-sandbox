@@ -14,15 +14,16 @@
 #include "pi/yaml-config/assets.hpp"
 #include "pi/system-graph/system_graph.hpp"
 #include "pi/sdl-systems/renderer_system.hpp"
-#include "colored-squares/colored_square.hpp"
-
 #include "pi/events/event_sink.hpp"
+
 #include "input/keyboard-axis/keyboard_axis.hpp"
+#include "colored-squares/colored_square.hpp"
+#include "basic-movement/movement.hpp"
 
 #include "world-system/world_system.hpp"
-#include "basic-movement/movement.hpp"
 #include "void-muncher/player_controller.hpp"
 #include "void-muncher/munchable_system.hpp"
+#include "void-muncher/munch_system.hpp"
 
 namespace fs = std::filesystem;
 
@@ -97,6 +98,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
     const auto munchable_config = pi::load_asset<munch::munchable_data>(munchable_path);
     auto& munchables = *systems.load<munch::munchable_system>(munchable_config);
 
+    const auto score_path = munch::resource_path("scoring-system").string();
+    const auto score_config = pi::load_asset<munch::score_params>(score_path);
+    munch::munch_system munch_system{ score_config };
+
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
     auto player = munch::player_controller::create(&world, muncher_config);
@@ -132,7 +137,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         events.poll();
         munch::update_positions(entities, delta_ticks);
         munchables.update(world, delta_ticks);
-        player.munch_or_be_munched();
+        munch_system.munch_or_be_munched(world.entities, player.id);
 
         // Rendering
         ImGui::Render();
