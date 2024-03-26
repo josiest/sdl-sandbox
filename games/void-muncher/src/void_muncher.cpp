@@ -79,7 +79,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
-
     auto player = munch::player_controller::create(&world, muncher_config);
     player.connect_to(axis);
 
@@ -109,7 +108,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
         munch::draw_all_colored_squares(entities, renderer);
         SDL_RenderPresent(renderer);
-
     }
     return EXIT_SUCCESS;
 }

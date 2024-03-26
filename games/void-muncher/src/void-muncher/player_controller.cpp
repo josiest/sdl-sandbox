@@ -30,12 +30,11 @@ void munch::player_controller::connect_to(pi::keyboard_axis& axis_delegate)
 
 void munch::player_controller::orient(const pi::axis2d8_t& axis) const
 {
+    const float norm = std::sqrt(static_cast<float>(axis.x*axis.x + axis.y*axis.y));
     if (world and world->entities.valid(id))
     {
         const auto movement = world->entities.get<component::dynamic_movement>(id);
-        auto& velocity = world->entities.get<component::velocity>(id);
-        const float norm = std::sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
-        velocity.x = axis.x * movement.max_speed/norm;
-        velocity.y = axis.y * movement.max_speed/norm;
+        const float speed = movement.max_speed/std::max(norm, 1.f);
+        world->entities.replace<component::velocity>(id, axis.x*speed, axis.y*speed);
     }
 }
