@@ -47,6 +47,7 @@ public:
 
     void connect_to(pi::keyboard_axis& axis_delegate);
     void orient(const pi::axis2d8_t& axis) const;
+    void munch_or_be_munched();
 
     munch::world_system* world = nullptr;
     entt::entity id{ 0 };

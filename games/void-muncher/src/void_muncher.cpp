@@ -102,6 +102,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         events.poll();
         munch::update_positions(entities, delta_ticks);
         munchables.update(world, delta_ticks);
+        player.munch_or_be_munched();
 
         SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(renderer);
