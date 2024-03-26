@@ -1,5 +1,22 @@
 #include "pi/yaml-config/meta.hpp"
 
+YAML::Node pi::config::encode_float(const entt::meta_any & number)
+{
+    const auto type = number.type();
+    switch (type.size_of()) {
+    case sizeof(float):
+        return YAML::Node{ number.cast<float>() };
+    case sizeof(double):
+        return YAML::Node{ number.cast<double>() };
+    case sizeof(long double):
+        return YAML::Node{ number.cast<long double>() };
+    default:
+        // TODO: add more info to message
+        std::printf("tried to encode a float with unknown size\n");
+        return YAML::Node{};
+    }
+}
+
 YAML::Node pi::config::encode_unsigned_integer(const entt::meta_any & number)
 {
     const auto type = number.type();

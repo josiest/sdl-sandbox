@@ -72,10 +72,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
 
 
     auto& world = *systems.load<munch::world_system>();
-    auto& munchables = *systems.load<munch::munchable_system>();
+
+    const auto munchable_path = munch::resource_path("munchables").string();
+    const auto munchable_config = pi::load_asset<munch::munchable_data>(munchable_path);
+    auto& munchables = *systems.load<munch::munchable_system>(munchable_config);
 
     const auto muncher_path = munch::resource_path("muncher").string();
     const auto muncher_config = pi::load_asset<munch::muncher_data>(muncher_path);
+
     auto player = munch::player_controller::create(&world, muncher_config);
     player.connect_to(axis);
 

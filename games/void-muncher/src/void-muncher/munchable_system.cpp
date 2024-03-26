@@ -11,6 +11,14 @@
 #include "basic-components/basic_components.hpp"
 #include "world-system/world_system.hpp"
 
+munch::munchable_system* munch::munchable_system::load(system_graph & system,
+                                                       const munch::munchable_data& data)
+{
+    auto* munchables = munch::munchable_system::load(system);
+    munchables->config = data;
+    return munchables;
+}
+
 munch::munchable_system* munch::munchable_system::load(pi::system_graph & systems)
 {
     auto* world = systems.load<munch::world_system>();
@@ -26,11 +34,11 @@ void munch::munchable_system::update(munch::world_system & world, std::uint32_t 
         ticks_since_spawn += delta_ticks;
     }
     // (1000 ticks/sec) / (x hz) = y ticks
-    if (ticks_since_spawn <= 1000/spawn_frequency) {
+    if (ticks_since_spawn <= 1000/config.spawn_frequency) {
         return;
     }
     despawn_any_outside(world);
-    std::discrete_distribution<> coin_toss({ 1.f-spawn_chance, spawn_chance });
+    std::discrete_distribution<> coin_toss({ 1.f-config.spawn_chance, config.spawn_chance });
     if (coin_toss(world.rng)) {
         spawn(world);
         ticks_since_spawn = 0;
@@ -59,7 +67,7 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     float size = 20.f;
     if (auto const * player_box = world.entities.try_get<component::bbox>(world.player_id)) {
         std::lognormal_distribution size_dist{ std::log(player_box->size),
-                                               std::log(std::sqrt(size_variance)) };
+                                               std::log(std::sqrt(config.size_variance)) };
         size = size_dist(world.rng);
     }
 
@@ -75,7 +83,7 @@ void munch::munchable_system::spawn(munch::world_system & world) const
     );
 
     constexpr float pi = std::numbers::pi_v<float>;
-    std::normal_distribution<float> angle_offset{ 0.f, std::sqrt(target_angle_variance) * pi/3 };
+    std::normal_distribution<float> angle_offset{ 0.f, std::sqrt(config.target_angle_variance) * pi/3 };
 
     /** angle from center to the spawn position */
     //      |v| sin(theta) = v.y; |v| cos(theta) = v.x

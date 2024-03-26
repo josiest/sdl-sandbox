@@ -23,6 +23,7 @@ requires(T& val, const YAML::Node& node) {
 
 YAML::Node encode_unsigned_integer(const entt::meta_any & number);
 YAML::Node encode_integer(const entt::meta_any & obj);
+YAML::Node encode_float(const entt::meta_any & obj);
 YAML::Node encode_class(const entt::meta_any & obj);
 
 template<yaml_decodable ValueType>
