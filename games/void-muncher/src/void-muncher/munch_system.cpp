@@ -37,8 +37,12 @@ void munch_system::draw_score(SDL_Renderer * renderer)
     SDL_GetRendererOutputSize(renderer, &screen_width, &screen_height);
 
     const std::string score_text = std::format("{0}", score);
-    const ImVec2 text_size = ImGui::CalcTextSize(score_text.c_str());
-    const float widget_height = text_size.y + static_cast<float>(2*widget.inner_padding);
+    const ImVec2 score_value_size = ImGui::CalcTextSize(score_text.c_str());
+    const ImVec2 score_text_size = ImGui::CalcTextSize("Score");
+
+    const float spacing = ImGui::GetTextLineHeightWithSpacing() - ImGui::GetTextLineHeight();
+    const float widget_height = score_text_size.y + score_value_size.y
+                              + 2*widget.inner_padding + 3*spacing;
 
     const SDL_FRect score_bounds{
         static_cast<float>(screen_width) - widget.outer_padding - widget.width,
@@ -49,10 +53,14 @@ void munch_system::draw_score(SDL_Renderer * renderer)
     ImGui::SetNextWindowSize(ImVec2{ score_bounds.w, score_bounds.h });
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove
-                                  | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+                                  | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse
+                                  | ImGuiWindowFlags_NoScrollbar;
 
     ImGui::Begin("score-window", nullptr, window_flags);
-    ImGui::SetCursorPos(ImVec2{ (widget.width - text_size.x) * 0.5f, widget.inner_padding });
+    ImGui::SetCursorPos(ImVec2{ (widget.width - score_text_size.x) * .5f,
+                                 widget.inner_padding + spacing });
+    ImGui::Text("Score");
+    ImGui::SetCursorPosX((widget.width - score_value_size.x) * .5f);
     ImGui::Text(score_text.c_str());
     ImGui::End();
 }
