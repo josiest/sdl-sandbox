@@ -12,12 +12,14 @@ struct SDL_Renderer;
 inline namespace munch {
 struct score_params {
     std::uint32_t score_per_munchable = 10;
+    float growth_rate = 0.1f;
 };
 
 struct score_widget {
     float width = 100.f;
     float outer_padding = 50.f;
     float inner_padding = 20.f;
+    float font_size = 20.f;
     std::string font_name = "ProggyClean";
 };
 }
@@ -29,6 +31,7 @@ inline auto reflect<munch::score_params>()
     using namespace entt::literals;
     return entt::meta<munch::score_params>()
         .type("scoring-system"_hs)
+        .data<&munch::score_params::growth_rate>("growth-rate"_hs)
         .data<&munch::score_params::score_per_munchable>("score-per-munchable"_hs);
 }
 
@@ -41,6 +44,7 @@ inline auto reflect<munch::score_widget>()
         .data<&munch::score_widget::width>("width"_hs)
         .data<&munch::score_widget::inner_padding>("inner-padding"_hs)
         .data<&munch::score_widget::outer_padding>("outer-padding"_hs)
+        .data<&munch::score_widget::font_size>("font-size"_hs)
         .data<&munch::score_widget::font_name>("font-name"_hs);
 }
 }

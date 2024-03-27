@@ -13,16 +13,18 @@
 void munch_system::munch_or_be_munched(entt::registry & entities, entt::entity player)
 {
     if (not entities.valid(player)) { return; }
-    const SDL_FRect player_bbox = entities.get<component::bbox>(player);
+    auto& player_bbox = entities.get<component::bbox>(player);
+    const SDL_FRect player_b_rect = player_bbox;
 
     auto munchables = entities.view<component::bbox>();
     for (const auto & [munchable, munchable_bbox] : munchables.each()) {
 
         const SDL_FRect munchable_b_rect = munchable_bbox;
         if (munchable == player) { continue; }
-        if (not SDL_HasIntersectionF(&munchable_b_rect, &player_bbox)) { continue; }
-        if (player_bbox.w > munchable_bbox.size) {
+        if (not SDL_HasIntersectionF(&munchable_b_rect, &player_b_rect)) { continue; }
+        if (player_bbox.size > munchable_bbox.size) {
             entities.destroy(munchable);
+            player_bbox.size += config.growth_rate * munchable_bbox.size;
             score += config.score_per_munchable;
         }
         else {
