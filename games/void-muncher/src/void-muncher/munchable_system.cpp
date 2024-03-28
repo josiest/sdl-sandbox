@@ -9,6 +9,7 @@
 #include "pi/system-graph/system_graph.hpp"
 
 #include "basic-components/basic_components.hpp"
+#include "basic-movement/movement.hpp"
 #include "world-system/world_system.hpp"
 
 munch::munchable_system* munch::munchable_system::load(system_graph & system,

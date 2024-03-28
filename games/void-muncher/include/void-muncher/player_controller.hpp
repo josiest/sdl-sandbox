@@ -16,14 +16,11 @@ inline namespace munch {
 struct muncher_data {
     SDL_Color color{ 0x0, 0x0, 0x0, 0xff };
     float starting_size = 20.f;
-    float speed = 200.f;
+    float acceleration_constant = 100.f;
+    float friction_constant = .2f;
+    float min_speed = 1.f;
+    float max_speed = 200.f;
 };
-
-namespace component {
-struct dynamic_movement{
-    float max_speed = 100.f;
-};
-}
 }
 
 inline namespace pi {
@@ -36,7 +33,10 @@ template<> inline auto reflect<muncher_data>()
         .type("muncher-settings"_hs)
         .data<&muncher_data::color>("color"_hs)
         .data<&muncher_data::starting_size>("starting-size"_hs)
-        .data<&muncher_data::speed>("speed"_hs);
+        .data<&muncher_data::acceleration_constant>("acceleration-constant"_hs)
+        .data<&muncher_data::friction_constant>("friction-constant"_hs)
+        .data<&muncher_data::min_speed>("min-speed"_hs)
+        .data<&muncher_data::max_speed>("max-speed"_hs);
 }
 }
 

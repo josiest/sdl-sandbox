@@ -146,6 +146,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[])
         ticks = current_ticks;
         events.poll();
 
+        munch::update_velocities(entities, delta_ticks);
         munch::update_positions(entities, delta_ticks);
         munchables.update(world, delta_ticks);
         munch_system.munch_or_be_munched(world.entities, player.id);

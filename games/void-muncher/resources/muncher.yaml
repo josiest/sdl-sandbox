@@ -1,1 +1,4 @@
-speed: 200
+acceleration-constant: 400
+friction-constant: 2
+min-speed: 0.1
+max-speed: 200
