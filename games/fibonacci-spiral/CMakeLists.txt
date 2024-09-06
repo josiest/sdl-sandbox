@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.18)
-project(fibonacci-spiral)
-
 add_executable(fibonacci-spiral src/sketch.cpp)
+file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 set_target_properties(fibonacci-spiral PROPERTIES
     CXX_STANDARD 23
     CXX_STANDARD_REQUIRED TRUE)

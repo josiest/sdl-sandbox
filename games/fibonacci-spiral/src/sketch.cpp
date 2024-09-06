@@ -16,7 +16,8 @@
 
 namespace fs = std::filesystem;
 namespace fib {
-const fs::path resource_dir{ "resources" };
+const fs::path base_dir{ "fibonacci-spiral" };
+const fs::path resource_dir = base_dir/"resources";
 const fs::path asset_dir = resource_dir/"spirals";
 
 std::string asset_filename(std::string_view asset_name)
