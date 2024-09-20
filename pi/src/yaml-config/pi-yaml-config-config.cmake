@@ -1,0 +1,7 @@
+include(CMakeFindDependencyMacro)
+find_dependency(SDL2)
+find_dependency(yaml-cpp)
+find_dependency(pi-containers)
+find_dependency(pi-reflection)
+include("${CMAKE_CURRENT_LIST_DIR}/pi-yaml-config-targets.cmake")
+add_library(pi::yaml-config ALIAS pi::pi-yaml-config)

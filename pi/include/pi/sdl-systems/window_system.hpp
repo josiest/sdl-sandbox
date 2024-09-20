@@ -10,7 +10,7 @@
 #include <SDL2/SDL_video.h>
 #include <entt/core/type_info.hpp>
 
-#include "pi/sdl-systems/init_system.hpp"
+#include "pi/sdl-systems/sdl_system.hpp"
 #include "pi/sdl-systems/sdl_deleter.hpp"
 
 namespace YAML {
@@ -28,14 +28,13 @@ struct window_system {
     inline static TypeOutput dependencies(TypeOutput into_dependencies)
     {
         namespace ranges = std::ranges;
-        return ranges::copy(
-                std::array{ entt::type_hash<init_system>::value() },
-                into_dependencies).out;
+        return ranges::copy(std::array{ entt::type_hash<sdl_system>::value() },
+                            into_dependencies).out;
     }
 
     static window_system* load(system_graph& systems);
     static window_system* load(system_graph& systems, const YAML::Node& root);
-    SDL_Window* window();
+    [[nodiscard]] SDL_Window* window() const;
 
     unique_window window_handle;
 

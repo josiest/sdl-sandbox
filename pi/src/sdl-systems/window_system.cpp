@@ -8,14 +8,14 @@
 
 pi::window_system* pi::window_system::load(system_graph& systems)
 {
-    if (not systems.load<pi::init_system>()) { return nullptr; }
+    if (not systems.load<pi::sdl_system>()) { return nullptr; }
     return load(systems, pi::window_params{});
 }
 
 pi::window_system* pi::window_system::load(system_graph& systems, const YAML::Node& root)
 {
     namespace msg = YAML::ErrorMsg;
-    if (not systems.load<pi::init_system>(root)) { return nullptr; }
+    if (not systems.load<pi::sdl_system>(root)) { return nullptr; }
 
     pi::window_params params;
     if (not root or not root.IsMap()) { return load(systems, params); }
@@ -40,5 +40,5 @@ pi::window_system* pi::window_system::load(system_graph& systems, const pi::wind
     return &systems.emplace<window_system>(unique_window{ window });
 }
 
-SDL_Window* pi::window_system::window() { return window_handle.get(); }
+SDL_Window* pi::window_system::window() const { return window_handle.get(); }
 

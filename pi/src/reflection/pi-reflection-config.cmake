@@ -1,0 +1,5 @@
+include(CMakeFindDependencyMacro)
+find_dependency(SDL2)
+find_dependency(EnTT)
+include("${CMAKE_CURRENT_LIST_DIR}/pi-reflection-targets.cmake")
+add_library(pi::reflection ALIAS pi::pi-reflection)

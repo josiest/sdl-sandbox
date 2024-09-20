@@ -38,15 +38,13 @@ template<typename EnumType, std::unsigned_integral FlagType>
 requires yaml_enum<EnumType, FlagType>
 YAML::Node encode_flags(FlagType flags)
 {
-    YAML::Node names;
-    auto encode = [&](const auto& flag_pair) {
-        const auto& [flag, name] = flag_pair;
-        if ((flags & flag) == flag) {
-            names.push_back(std::string{ name });
-        }
-    };
     using lookup = YAML::convert<EnumType>;
-    std::ranges::for_each(lookup::begin(), lookup::end(), encode);
+    YAML::Node names;
+
+    for (auto it = lookup::begin(); it != lookup::end(); ++it) {
+        const auto& [flag, name] = *it;
+        if ((flags & flag) == flag) { names.push_back(std::string{ name }); }
+    }
     return names;
 }
 
@@ -90,7 +88,6 @@ bool read_flags_into(const YAML::Node& node, FlagType& flags)
     auto read_into_flags = [&](const YAML::Node& elem) {
         return read_flag_into<EnumType>(elem, flags);
     };
-    return std::transform_reduce(node.begin(), node.end(),
-                                 true, std::logical_and{}, read_into_flags);
+    return std::all_of(node.begin(), node.end(), read_into_flags);
 }
 }

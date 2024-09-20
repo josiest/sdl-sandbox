@@ -7,11 +7,21 @@ find_package(yaml-cpp REQUIRED)
 add_library(pi-yaml-config STATIC errors.cpp paths.cpp color.cpp meta.cpp assets.cpp)
 add_library(pi::yaml-config ALIAS pi-yaml-config)
 
+set_target_properties(pi-yaml-config PROPERTIES
+        CXX_STANDARD 23
+        CX_STANDARD_REQUIRED True
+        VERSION 0.1.0
+        SOVERSION 0)
+
 # specify include directories for pi-yaml-config
 target_include_directories(
         pi-yaml-config PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
+find_package(yaml-cpp REQUIRED)
 
 # link the required dependencies
 if (TARGET SDL2::SDL2main)
@@ -50,4 +60,17 @@ install(TARGETS pi-yaml-config
 install(EXPORT pi-yaml-config-targets
         FILE pi-yaml-config-targets.cmake
         NAMESPACE pi::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pi/yaml-config)
+
+# generate version for config file
+include(CMakePackageConfigHelpers)
+get_target_property(pi_yaml_config_VERSION pi-yaml-config VERSION)
+write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/pi-yaml-config-config-version.cmake"
+        VERSION ${pi_yaml_config_VERSION}
+        COMPATIBILITY AnyNewerVersion)
+
+#install config files
+install(FILES pi-yaml-config-config.cmake
+        "${CMAKE_CURRENT_BINARY_DIR}/pi-yaml-config-config-version.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pi/yaml-config)

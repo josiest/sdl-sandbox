@@ -15,7 +15,7 @@
 #include "fibonacci_spiral.hpp"
 
 namespace fs = std::filesystem;
-namespace fib {
+inline namespace fib {
 const fs::path base_dir{ "fibonacci-spiral" };
 const fs::path resource_dir = base_dir/"resources";
 const fs::path asset_dir = resource_dir/"spirals";

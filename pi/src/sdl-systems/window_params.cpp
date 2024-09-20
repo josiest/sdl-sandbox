@@ -11,5 +11,5 @@ SDL_Window* pi::make_window(const pi::window_params& params)
     const auto flags = params.flags.value_or(window::flags);
 
     return SDL_CreateWindow(name.c_str(), position.x, position.y,
-                            size.x, size.y, flags);
+                                          size.x, size.y, flags);
 }

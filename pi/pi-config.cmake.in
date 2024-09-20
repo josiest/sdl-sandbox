@@ -1,12 +1,11 @@
 @PACKAGE_INIT@
-
-set(_pi_supported_components events graphs system-graph containers reflection
+set(_pi_supported_components containers events graphs system-graph reflection
                              algorithm yaml-config sdl-systems)
 foreach(_comp ${pi_FIND_COMPONENTS})
     if (NOT _comp IN_LIST _pi_supported_components)
         set(pi_FOUND False)
         set(pi_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
     endif()
-    include("${CMAKE_CURRENT_LIST_DIR}/${_comp}/pi-${_comp}-targets.cmake")
-    add_library(pi::${_comp} ALIAS pi::pi-${_comp})
+    include("${CMAKE_CURRENT_LIST_DIR}/${_comp}/pi-${_comp}-config.cmake")
+    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR}/${_comp})
 endforeach()

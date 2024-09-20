@@ -1,0 +1,5 @@
+include(CMakeFindDependencyMacro)
+find_dependency(EnTT)
+find_dependency(pi-graphs)
+include("${CMAKE_CURRENT_LIST_DIR}/pi-system-graph-targets.cmake")
+add_library(pi::system-graph ALIAS pi::pi-system-graph)
