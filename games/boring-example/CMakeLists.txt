@@ -13,5 +13,5 @@ if (TARGET SDL2::SDL2main)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ../lib/cmake)
-find_package(pi COMPONENTS containers sdl-systems REQUIRED)
-target_link_libraries(boring-example PRIVATE SDL2::SDL2 pi::containers pi::sdl-systems)
+find_package(pi COMPONENTS sdl-resources REQUIRED)
+target_link_libraries(boring-example PRIVATE SDL2::SDL2 pi::sdl-resources)

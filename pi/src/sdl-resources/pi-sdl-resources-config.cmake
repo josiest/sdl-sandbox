@@ -1,0 +1,7 @@
+include(CMakeFindDependencyMacro)
+find_dependency(SDL2)
+find_dependency(EnTT)
+find_dependency(yaml-cpp)
+find_dependency(pi-yaml-config)
+include("${CMAKE_CURRENT_LIST_DIR}/pi-sdl-resources-targets.cmake")
+add_library(pi::sdl-resources ALIAS pi::pi-sdl-resources)

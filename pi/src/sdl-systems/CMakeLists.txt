@@ -3,7 +3,7 @@
 # Define the Library
 #
 
-add_library(pi-sdl-systems STATIC init_params.cpp init_system.cpp sdl_deleter.cpp
+add_library(pi-sdl-systems STATIC init_params.cpp sdl_system.cpp sdl_deleter.cpp
                                   window_params.cpp window_system.cpp
                                   renderer_params.cpp renderer_system.cpp)
 

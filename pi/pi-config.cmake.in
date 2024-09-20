@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 set(_pi_supported_components containers events graphs system-graph reflection
-                             algorithm yaml-config sdl-systems)
+                             algorithm yaml-config sdl-resources sdl-systems)
 foreach(_comp ${pi_FIND_COMPONENTS})
     if (NOT _comp IN_LIST _pi_supported_components)
         set(pi_FOUND False)
