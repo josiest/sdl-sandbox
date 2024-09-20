@@ -10,7 +10,7 @@ class Node;
 
 inline namespace pi {
 class system_graph;
-struct init_params;
+struct sdl_params;
 
 class sdl_system {
 public:
@@ -28,7 +28,7 @@ public:
 
     static sdl_system* load(system_graph& systems);
     static sdl_system* load(system_graph& systems, const YAML::Node& root);
-    static sdl_system* load(system_graph& systems, const pi::init_params& params);
+    static sdl_system* load(system_graph& systems, const pi::sdl_params& params);
 private:
     sdl_system() = default;
     bool should_quit = true;

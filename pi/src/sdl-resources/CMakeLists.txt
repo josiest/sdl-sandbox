@@ -1,4 +1,4 @@
-add_library(pi-sdl-resources STATIC sdl_handle.cpp)
+add_library(pi-sdl-resources STATIC sdl_handle.cpp sdl_params.cpp)
 add_library(pi::sdl-resources ALIAS pi-sdl-resources)
 
 set_target_properties(pi-sdl-resources PROPERTIES
@@ -37,6 +37,7 @@ install(TARGETS pi-sdl-resources
 
 # install the include files for pi-sdl-resources
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/sdl-resources/sdl_handle.hpp
+              ${CMAKE_SOURCE_DIR}/include/pi/sdl-resources/sdl_params.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/sdl-resources)
 
 # create and install the target files

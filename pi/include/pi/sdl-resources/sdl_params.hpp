@@ -11,22 +11,22 @@
 
 inline namespace pi {
 
-struct init_params{
+struct sdl_params{
     std::optional<std::uint32_t> flags = std::nullopt;
 };
 
-bool init_sdl(const init_params& params);
+bool init_sdl(const sdl_params& params);
 }
 
 template<>
-struct YAML::convert<pi::init_params>
+struct YAML::convert<pi::sdl_params>
 {
-    inline static YAML::Node encode(const pi::init_params& params)
+    inline static YAML::Node encode(const pi::sdl_params& params)
     {
         return pi::encode_flags<SDL_InitFlags>(*params.flags);
     }
 
-    inline static bool decode(const YAML::Node& node, pi::init_params& params)
+    inline static bool decode(const YAML::Node& node, pi::sdl_params& params)
     {
         namespace msg = YAML::ErrorMsg;
         if (not node) {
