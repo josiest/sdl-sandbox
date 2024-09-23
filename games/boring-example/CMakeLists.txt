@@ -15,3 +15,5 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ../lib/cmake)
 find_package(pi COMPONENTS sdl-resources REQUIRED)
 target_link_libraries(boring-example PRIVATE SDL2::SDL2 pi::sdl-resources)
+
+file(COPY config.yml DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

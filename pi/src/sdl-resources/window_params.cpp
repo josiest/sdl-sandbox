@@ -1,4 +1,4 @@
-#include "pi/sdl-systems/window_params.hpp"
+#include "pi/sdl-resources/window_params.hpp"
 #include <SDL2/SDL_video.h>
 
 SDL_Window* pi::make_window(const pi::window_params& params)

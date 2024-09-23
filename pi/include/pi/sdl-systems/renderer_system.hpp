@@ -11,7 +11,7 @@
 #include <entt/core/type_info.hpp>
 
 #include "pi/sdl-systems/window_system.hpp"
-#include "pi/sdl-systems/sdl_deleter.hpp"
+#include "pi/sdl-resources/sdl_deleter.hpp"
 
 inline namespace pi {
 
@@ -20,8 +20,6 @@ class system_graph;
 
 class renderer_system {
 public:
-    using unique_renderer = std::unique_ptr<SDL_Renderer, sdl_deleter>;
-
     template<std::output_iterator<entt::id_type> TypeOutput>
     inline static TypeOutput dependencies(TypeOutput into_types)
     {

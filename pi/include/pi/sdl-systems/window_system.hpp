@@ -11,7 +11,7 @@
 #include <entt/core/type_info.hpp>
 
 #include "pi/sdl-systems/sdl_system.hpp"
-#include "pi/sdl-systems/sdl_deleter.hpp"
+#include "pi/sdl-resources/sdl_deleter.hpp"
 
 namespace YAML {
 class Node;
@@ -22,7 +22,6 @@ struct window_params;
 class system_graph;
 
 struct window_system {
-    using unique_window = std::unique_ptr<SDL_Window, sdl_deleter>;
 
     template<std::output_iterator<entt::id_type> TypeOutput>
     inline static TypeOutput dependencies(TypeOutput into_dependencies)

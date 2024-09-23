@@ -1,0 +1,4 @@
+window:
+  name: A simple example
+  size: [640, 480]
+  flags: resizable

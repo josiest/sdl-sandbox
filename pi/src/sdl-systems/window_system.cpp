@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "pi/system-graph/system_graph.hpp"
-#include "pi/sdl-systems/window_params.hpp"
+#include "pi/sdl-resources/window_params.hpp"
 #include "pi/yaml-config/errors.hpp"
 
 pi::window_system* pi::window_system::load(system_graph& systems)

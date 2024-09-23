@@ -1,4 +1,4 @@
-#include "pi/sdl-systems/sdl_deleter.hpp"
+#include "pi/sdl-resources/sdl_deleter.hpp"
 
 #include <cstdio>
 

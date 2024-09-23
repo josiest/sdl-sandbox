@@ -1,4 +1,4 @@
-#include "pi/sdl-systems/renderer_params.hpp"
+#include "pi/sdl-resources/renderer_params.hpp"
 
 SDL_Renderer* pi::make_renderer(SDL_Window* window, const renderer_params& params)
 {

@@ -3,10 +3,7 @@
 # Define the Library
 #
 
-add_library(pi-sdl-systems STATIC sdl_system.cpp sdl_deleter.cpp
-                                  window_params.cpp window_system.cpp
-                                  renderer_params.cpp renderer_system.cpp)
-
+add_library(pi-sdl-systems STATIC sdl_system.cpp window_system.cpp renderer_system.cpp)
 add_library(pi::sdl-systems ALIAS pi-sdl-systems)
 
 set_target_properties(pi-sdl-systems PROPERTIES
@@ -46,10 +43,7 @@ install(TARGETS pi-sdl-systems
 
 # install the include files for pi-sdl-systems
 install(FILES ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/sdl_system.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/sdl_deleter.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/window_params.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/window_system.hpp
-              ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/renderer_params.hpp
               ${CMAKE_SOURCE_DIR}/include/pi/sdl-systems/renderer_system.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pi/sdl-systems)
 
